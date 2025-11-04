@@ -18,21 +18,25 @@ module.exports = () => ({
      */
     play: (sound, volume, pitch) => {
         console.log(`[EngineWrapper/SoundFacet] Sound ${sound} requested.`);
-        /**
-         * @type {typeof import("../../hbui/sound_definitions.json")}
-         */
-        const soundDefinitions = require(__dirname + "/../../hbui/sound_definitions.json", { encoding: "utf-8" });
-        console.log(soundDefinitions, sound);
-        if (soundDefinitions[sound] && soundDefinitions[sound].sounds.length != false) {
-            const soundDefinition = soundDefinitions[sound];
-            const audio = new Audio(soundDefinition.sounds[Math.floor(Math.random() * soundDefinition.sounds.length)].name);
-            audio.volume = volume ?? 1;
-            audio.preservesPitch = false;
-            audio.playbackRate = pitch ?? 1;
-            currentlyPlayingSounds.set(nextSoundId++, audio);
-            audio.play().then(() => {
-                currentlyPlayingSounds.delete(nextSoundId - 1);
-            });
+        try {
+            /**
+             * @type {typeof import("../../hbui/sound_definitions.json")}
+             */
+            const soundDefinitions = require(__dirname + "/../../hbui/sound_definitions.json", { encoding: "utf-8" });
+            console.log(soundDefinitions, sound);
+            if (soundDefinitions[sound] && soundDefinitions[sound].sounds.length != false) {
+                const soundDefinition = soundDefinitions[sound];
+                const audio = new Audio(soundDefinition.sounds[Math.floor(Math.random() * soundDefinition.sounds.length)].name);
+                audio.volume = volume ?? 1;
+                audio.preservesPitch = false;
+                audio.playbackRate = pitch ?? 1;
+                currentlyPlayingSounds.set(nextSoundId++, audio);
+                audio.play().then(() => {
+                    currentlyPlayingSounds.delete(nextSoundId - 1);
+                });
+            }
+        } catch (e) {
+            console.error(e);
         }
     },
     /**
