@@ -1,5 +1,4 @@
 const fs = require("node:fs");
-const Config = require("../../config.json");
 let translations = {
     // Default experimental toggle translations that aren't includes in the Ore UI lang files.
     "createWorldScreen.experimentalgameplay": "Experiments",
@@ -20,18 +19,18 @@ let translations = {
     "createWorldScreen.experimentalDeferredTechnicalPreviewDescription":
         "Enable the deferred rendering pipeline. Requires a PBR-enabled resource pack and compatible hardware.",
 };
-if (Config.use_translation) {
-    console.log("[EngineWrapper/LocaleFacet] Loading " + Config.locale + ".lang file...");
+if (__internal_Config__.use_translation) {
+    console.log("[EngineWrapper/LocaleFacet] Loading " + __internal_Config__.locale + ".lang file...");
 
-    const locdat = fs.readFileSync((globalThis.textsPath ?? "./src/texts/") + Config.locale + ".lang").toString();
+    const locdat = fs.readFileSync((globalThis.textsPath ?? "./src/texts/") + __internal_Config__.locale + ".lang").toString();
     for (const item of locdat.split("\n")) translations[item.split("=")[0]] = item.split("=").slice(1).join("=")?.replace("\r", "");
 }
 
 module.exports = () => ({
-    locale: Config.locale,
-    translate: (id) => (Config.use_translation ? translations[id]?.split("#")[0]?.trim() : id),
+    locale: __internal_Config__.locale,
+    translate: (id) => (__internal_Config__.use_translation ? translations[id]?.split("#")[0]?.trim() : id),
     translateWithParameters: (id, params) => {
-        if (Config.use_translation) {
+        if (__internal_Config__.use_translation) {
             let translation = translations[id];
             if (/%\d+|$s/g.test(translation)) {
                 for (i = 1; i <= params.length; i++) {

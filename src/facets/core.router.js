@@ -1,6 +1,4 @@
-const Config = require("../../config.json");
-
-const url = new URL(Config.pathname, "http://localhost/");
+const url = new URL(__internal_Config__.pathname, "http://localhost/");
 let list = [{ pathname: url.pathname, hash: "", search: url.search, state: "" }];
 let listB = list;
 let location = list[0];

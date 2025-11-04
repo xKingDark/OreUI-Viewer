@@ -15,19 +15,19 @@ const facetsPath = String(JSON.parse(process.argv.find((arg) => arg.startsWith("
  * @type {string}
  */
 const cuebmapImagesPath = String(
-    JSON.parse(process.argv.find((arg) => arg.startsWith("--cubemap-images-path="))?.split("=")[1] || "null") ?? __dirname + "/src/assets/cubemap/"
+    JSON.parse(process.argv.find((arg) => arg.startsWith("--cubemap-images-path="))?.split("=")[1] || "null") ?? "/src/assets/cubemap/"
 );
 /**
  * @type {typeof import("./config.json")}
  */
-let Config = JSON.parse(JSON.parse(process.argv.find((arg) => arg.startsWith("--config-data="))?.split("=")[1] || "\"null\"")) ?? require(configPath);
-if (window.location.pathname != Config.file) window.location.pathname = Config.file;
+globalThis.__internal_Config__ = JSON.parse(JSON.parse(process.argv.find((arg) => arg.startsWith("--config-data="))?.split("=")[1] || "\"null\"")) ?? require(configPath);
+if (window.location.pathname != __internal_Config__.file) window.location.pathname = __internal_Config__.file;
 
 globalThis.textsPath = String(JSON.parse(process.argv.find((arg) => arg.startsWith("--texts-path="))?.split("=")[1] || "null") ?? __dirname + "/src/texts/");
 
 ipcRenderer.on("oreUIViewer:setConfig", (event, config) => {
-    Config = config;
-    window.location.pathname = Config.file;
+    __internal_Config__ = config;
+    window.location.pathname = __internal_Config__.file;
 });
 
 let loadedFacets = {};
@@ -164,12 +164,12 @@ window.addEventListener("DOMContentLoaded", () => {
     globalThis.__internal_cubemap__ = new Cubemap(
         document.getElementsByTagName("body")[0],
         [
-            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + Config.panorama + "/front.png",
-            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + Config.panorama + "/right.png",
-            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + Config.panorama + "/back.png",
-            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + Config.panorama + "/left.png",
-            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + Config.panorama + "/top.png",
-            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + Config.panorama + "/bottom.png",
+            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + __internal_Config__.panorama + "/front.png",
+            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + __internal_Config__.panorama + "/right.png",
+            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + __internal_Config__.panorama + "/back.png",
+            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + __internal_Config__.panorama + "/left.png",
+            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + __internal_Config__.panorama + "/top.png",
+            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + __internal_Config__.panorama + "/bottom.png",
         ],
         {
             width: "auto",
