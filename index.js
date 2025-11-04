@@ -38,7 +38,7 @@ const createWindow = () => {
         icon: "./src/assets/mcpreview.png",
         autoHideMenuBar: true,
         resizable: true,
-		titleBarStyle: "default",
+        titleBarStyle: "default",
         webPreferences: {
             preload: __dirname + "/engine.js",
             devTools: debug,
@@ -47,6 +47,10 @@ const createWindow = () => {
             nodeIntegration: true,
             contextIsolation: false,
             enableRemoteModule: true,
+            additionalArguments: [
+                `--config-path=${JSON.stringify(require("path").join(__dirname, "config.json"))}`,
+                `--facets-path=${JSON.stringify(require("path").join(__dirname, "src/facets/"))}`,
+            ],
         },
     });
 

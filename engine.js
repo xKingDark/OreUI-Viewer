@@ -1,13 +1,37 @@
 require("v8-compile-cache");
 const fs = require("fs");
+const path = require("path");
 const { Cubemap } = require("./libs/@hatchibombotar-cubemap");
-const Config = require("./config.json");
+const { ipcRenderer } = require("electron/renderer");
+/**
+ * @type {string}
+ */
+const configPath = String(JSON.parse(process.argv.find((arg) => arg.startsWith("--config-path="))?.split("=")[1] || "null") ?? "./config.json");
+/**
+ * @type {string}
+ */
+const facetsPath = String(JSON.parse(process.argv.find((arg) => arg.startsWith("--facets-path="))?.split("=")[1] || "null") ?? __dirname + "/src/facets/");
+/**
+ * @type {string}
+ */
+const cuebmapImagesPath = String(
+    JSON.parse(process.argv.find((arg) => arg.startsWith("--cubemap-images-path="))?.split("=")[1] || "null") ?? __dirname + "/src/assets/cubemap/"
+);
+/**
+ * @type {typeof import("./config.json")}
+ */
+let Config = JSON.parse(process.argv.find((arg) => arg.startsWith("--config-data="))?.split("=")[1] || "null") ?? require(configPath);
 if (window.location.pathname != Config.file) window.location.pathname = Config.file;
+
+ipcRenderer.on("oreUIViewer:setConfig", (event, config) => {
+    Config = config;
+    window.location.pathname = Config.file;
+});
 
 let loadedFacets = {};
 const loadFacet = async (facet) => {
     try {
-        const f = await require(__dirname + "/src/facets/" + facet + ".js");
+        const f = await require(path.join(facetsPath, facet + ".js"));
 
         //console.log( "[EngineWrapper] Facet Loaded: " + facet, f );
         loadedFacets[facet] = f;
@@ -128,22 +152,22 @@ window.addEventListener("DOMContentLoaded", () => {
     document.title = "Ore UI Preview";
     document.getElementsByTagName("body")[0].style = "user-select: none;";
 
-    //Panorama
+    // Panorama
     const link = document.createElement("link");
     link.href = "/libs/@hatchibombotar-cubemap/index.css";
     link.type = "text/css";
     link.rel = "stylesheet";
     document.getElementsByTagName("head")[0].appendChild(link);
 
-    new Cubemap(
+    globalThis.__internal_cubemap__ = new Cubemap(
         document.getElementsByTagName("body")[0],
         [
-            "/src/assets/cubemap/" + Config.panorama + "/front.png",
-            "/src/assets/cubemap/" + Config.panorama + "/right.png",
-            "/src/assets/cubemap/" + Config.panorama + "/back.png",
-            "/src/assets/cubemap/" + Config.panorama + "/left.png",
-            "/src/assets/cubemap/" + Config.panorama + "/top.png",
-            "/src/assets/cubemap/" + Config.panorama + "/bottom.png",
+            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + Config.panorama + "/front.png",
+            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + Config.panorama + "/right.png",
+            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + Config.panorama + "/back.png",
+            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + Config.panorama + "/left.png",
+            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + Config.panorama + "/top.png",
+            cuebmapImagesPath.replaceAll("\\", "/").replace(/(?<!\/)$/, "/") + Config.panorama + "/bottom.png",
         ],
         {
             width: "auto",
@@ -154,7 +178,9 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     );
 
-    //Fix CSS
+    window.addEventListener("resize", () => void globalThis.__internal_cubemap__?.update());
+
+    // To fix CSS
     const styleEl = document.createElement("style");
     document.head.appendChild(styleEl);
 
@@ -186,7 +212,7 @@ window.addEventListener("DOMContentLoaded", () => {
     styleSheet.insertRule(`.JsUBN { gap: 10px; }`, styleSheet.cssRules.length);
     styleSheet.insertRule(`.mSv3v { text-align: center; }`, styleSheet.cssRules.length);
 
-    // Fix box sizing issues.
+    // To fix box sizing issues.
     styleSheet.insertRule(`* { box-sizing: border-box; }`, styleSheet.cssRules.length);
     styleSheet.insertRule(
         `div:has(+div div+div):not(:has(+div div+div+div)):not(:has(> :nth-child(3))) div:first-child { min-height: auto; }`,
@@ -198,6 +224,8 @@ window.addEventListener("DOMContentLoaded", () => {
         `div:has(+ div div + div):not(:has(+ div div + div + div)) div:has(> div[data-testid="scroll-view"]) { overflow: auto; }`,
         styleSheet.cssRules.length
     );
+    styleSheet.insertRule(`button { width: 100%; }`);
+    styleSheet.insertRule(`* { -webkit-user-drag: none; }`, styleSheet.cssRules.length);
 });
 
 // This generates the value of the `data` variable. It should be put in the DevTools console in the Ore UI that is added with 8Crafter's Ore UI Customizer.
@@ -365,7 +393,9 @@ window.addEventListener("DOMContentLoaded", () => {
     "vanilla.realmsPurchaseQueries",
 ];
 
-getAccessibleFacetSpyFacets()["vanilla.clipboard"].copyToClipboard(
+const facetList = [...new Set([...Object.keys(accessedFacets), ...Object.keys(facetSpyData.sharedFacets)])];
+
+Promise.all(facetList.map(v => forceLoadFacet(v).catch(() => {}))).then(() => copyTextToClipboardAsync(
     JSONB.stringify(Object.fromEntries(Object.entries(getAccessibleFacetSpyFacets()).filter(([facetName]) => facetList.includes(facetName))), (k, v) => {
         if (typeof v === "object") {
             return v === null
@@ -414,7 +444,7 @@ getAccessibleFacetSpyFacets()["vanilla.clipboard"].copyToClipboard(
         }
         return v;
     })
-); */
+)); */
 
 /* getAccessibleFacetSpyFacets()["vanilla.clipboard"].copyToClipboard(
     JSONB.stringify(getAccessibleFacetSpyFacets()["vanilla.realmsStories.stories"], (k, v) => {
