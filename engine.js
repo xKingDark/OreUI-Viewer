@@ -20,7 +20,7 @@ const cuebmapImagesPath = String(
 /**
  * @type {typeof import("./config.json")}
  */
-let Config = JSON.parse(process.argv.find((arg) => arg.startsWith("--config-data="))?.split("=")[1] || "null") ?? require(configPath);
+let Config = JSON.parse(JSON.parse(process.argv.find((arg) => arg.startsWith("--config-data="))?.split("=")[1] || "\"null\"")) ?? require(configPath);
 if (window.location.pathname != Config.file) window.location.pathname = Config.file;
 
 globalThis.textsPath = String(JSON.parse(process.argv.find((arg) => arg.startsWith("--texts-path="))?.split("=")[1] || "null") ?? __dirname + "/src/texts/");
