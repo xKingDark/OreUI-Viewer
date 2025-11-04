@@ -20,7 +20,8 @@ const cuebmapImagesPath = String(
 /**
  * @type {typeof import("./config.json")}
  */
-globalThis.__internal_Config__ = JSON.parse(JSON.parse(process.argv.find((arg) => arg.startsWith("--config-data="))?.split("=")[1] || "\"null\"")) ?? require(configPath);
+globalThis.__internal_Config__ =
+    JSON.parse(JSON.parse(process.argv.find((arg) => arg.startsWith("--config-data="))?.split("=")[1] || '"null"')) ?? require(configPath);
 if (window.location.pathname != __internal_Config__.file) window.location.pathname = __internal_Config__.file;
 
 globalThis.textsPath = String(JSON.parse(process.argv.find((arg) => arg.startsWith("--texts-path="))?.split("=")[1] || "null") ?? __dirname + "/src/texts/");
@@ -228,6 +229,7 @@ window.addEventListener("DOMContentLoaded", () => {
     );
     styleSheet.insertRule(`button { width: 100%; }`);
     styleSheet.insertRule(`* { -webkit-user-drag: none; }`, styleSheet.cssRules.length);
+    styleSheet.insertRule(`span { display: block; }`, styleSheet.cssRules.length);
 });
 
 // This generates the value of the `data` variable. It should be put in the DevTools console in the Ore UI that is added with 8Crafter's Ore UI Customizer.
