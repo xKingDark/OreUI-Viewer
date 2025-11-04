@@ -1,25 +1,50 @@
+/* Modified by 8Crafter. */
+
 .cubemapcenter.spin-3d-y {
-    animation: spin-3d-y var(--spin-time) linear infinite;
     -webkit-animation: spin-3d-y var(--spin-time) linear infinite;
+    animation: spin-3d-y var(--spin-time) linear infinite;
 }
-  
-@keyframes spin-3d-y { 
+
+.cubemapcenter.spin-3d-y-reversed {
+    -webkit-animation: spin-3d-y-reversed var(--spin-time) linear infinite;
+    animation: spin-3d-y-reversed var(--spin-time) linear infinite;
+}
+
+@keyframes spin-3d-y {
     0% {
-        transform: translateZ(var(--offset-z)) rotateY(0deg) translateX(var(--offset-x)) translateY(var(--offset-y)); 
-    } 
+        transform: translateZ(var(--offset-z)) rotateY(0deg) translateX(var(--offset-x)) translateY(var(--offset-y));
+    }
     100% {
-        transform: translateZ(var(--offset-z)) rotateY(360deg) translateX(var(--offset-x)) translateY(var(--offset-y)); 
-    } 
+        transform: translateZ(var(--offset-z)) rotateY(360deg) translateX(var(--offset-x)) translateY(var(--offset-y));
+    }
 }
 @-webkit-keyframes spin-3d-y {
     0% {
-        -webkit-transform: translateZ(var(--offset-z)) rotateY(0deg) translateX(var(--offset-x)) translateY(var(--offset-y)); 
-    } 
+        -webkit-transform: translateZ(var(--offset-z)) rotateY(0deg) translateX(var(--offset-x)) translateY(var(--offset-y));
+    }
     100% {
-        -webkit-transform: translateZ(var(--offset-z)) rotateY(360deg) translateX(var(--offset-x)) translateY(var(--offset-y)); 
+        -webkit-transform: translateZ(var(--offset-z)) rotateY(360deg) translateX(var(--offset-x)) translateY(var(--offset-y));
+    }
+}
+
+@keyframes spin-3d-y-reversed {
+    0% {
+        transform: translateZ(var(--offset-z)) rotateY(0deg) translateX(var(--offset-x)) translateY(var(--offset-y));
+    }
+    100% {
+        transform: translateZ(var(--offset-z)) rotateY(-360deg) translateX(var(--offset-x)) translateY(var(--offset-y));
+    }
+}
+@-webkit-keyframes spin-3d-y-reversed {
+    0% {
+        -webkit-transform: translateZ(var(--offset-z)) rotateY(0deg) translateX(var(--offset-x)) translateY(var(--offset-y));
+    }
+    100% {
+        -webkit-transform: translateZ(var(--offset-z)) rotateY(-360deg) translateX(var(--offset-x)) translateY(var(--offset-y));
     }
 }
 
 .cubemap img {
     margin: 0;
 }
+

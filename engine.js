@@ -23,6 +23,8 @@ const cuebmapImagesPath = String(
 let Config = JSON.parse(process.argv.find((arg) => arg.startsWith("--config-data="))?.split("=")[1] || "null") ?? require(configPath);
 if (window.location.pathname != Config.file) window.location.pathname = Config.file;
 
+globalThis.textsPath = String(JSON.parse(process.argv.find((arg) => arg.startsWith("--texts-path="))?.split("=")[1] || "null") ?? __dirname + "/src/texts/");
+
 ipcRenderer.on("oreUIViewer:setConfig", (event, config) => {
     Config = config;
     window.location.pathname = Config.file;

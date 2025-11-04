@@ -23,8 +23,8 @@ let translations = {
 if (Config.use_translation) {
     console.log("[EngineWrapper/LocaleFacet] Loading " + Config.locale + ".lang file...");
 
-    const locdat = fs.readFileSync("./src/texts/" + Config.locale + ".lang").toString();
-    for (const item of locdat.split("\n")) translations[item.split("=")[0]] = item.split("=")[1]?.replace("\r", "");
+    const locdat = fs.readFileSync((globalThis.textsPath ?? "./src/texts/") + Config.locale + ".lang").toString();
+    for (const item of locdat.split("\n")) translations[item.split("=")[0]] = item.split("=").slice(1).join("=")?.replace("\r", "");
 }
 
 module.exports = () => ({
