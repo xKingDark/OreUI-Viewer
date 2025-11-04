@@ -10,6 +10,13 @@ module.exports = () => ({
     openPauseMenu() {},
     onViewportFocusAreaResized() {},
     openConsole() {},
-    navigateUri() {},
+    /**
+     * @param {string} uri
+     */
+    navigateUri(uri) {
+        console.log(`Navigating to URI: ${uri}`);
+        require("electron").shell.openExternal(uri);
+        return null;
+    },
     getCursorBlockName() {},
 });
