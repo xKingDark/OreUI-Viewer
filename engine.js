@@ -1,3 +1,5 @@
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable no-undef */
 require("v8-compile-cache");
 const fs = require("fs");
 const path = require("path");
@@ -47,64 +49,93 @@ globalThis.engine = {
     facets: loadedFacets,
     bindings: {},
     WindowLoaded: false,
-    BindingsReady: (...version) => console.log(`[EngineWrapper] BindingsReady called (v${version.join(".")})`),
-    on: (id, func) => (engine.bindings[id] = func),
-    off: (id) => delete engine.bindings[id],
-    RemoveOnHandler: (id, func, _) => console.log(`[EngineWrapper] RemoveOnHandler for ID ${id}. func: ${func}`),
-    trigger: (id, query, requestId, parameters) => {
+    BindingsReady: (...version) => console.log(`[EngineWrapper::BindingsReady] BindingsReady called (v${version.join(".")})`),
+    on: (id, func) => {
+        engine.bindings[id] ??= [];
+        engine.bindings[id].push(func);
+    },
+    off: (id, handler) => {
+        if (handler) {
+            engine.bindings[id] = engine.bindings[id].filter((h) => h !== handler);
+        } else {
+            delete engine.bindings[id];
+        }
+    },
+    RemoveOnHandler: (id, func, _) => console.log(`[EngineWrapper::RemoveOnHandler] RemoveOnHandler for ID ${id}. func: ${func}`),
+    trigger: (id, ...args) => {
         while (true) {
             if (!engine.WindowLoaded) continue;
             switch (id) {
-                case "facet:request":
+                case "facet:request": {
+                    const [query, requestId, parameters] = args;
                     if (engine.facets.hasOwnProperty(query)) {
-                        console.log(`[EngineWrapper] Sending Facet: ${query}`);
+                        console.log(`[EngineWrapper::trigger] Sending Facet: ${query}`, args);
                         if (requestId !== undefined) {
                             console.log(id, query, requestId, parameters);
-                            engine.bindings["facet:updated:" + requestId](
-                                typeof engine.facets[query] === "function"
-                                    ? engine.facets[query](parameters)
-                                    : (console.log("NOT A FUNCTION", query, engine.facets[query]), engine.facets[query])
+                            engine.bindings["facet:updated:" + requestId]?.forEach((f) =>
+                                f?.(
+                                    typeof engine.facets[query] === "function"
+                                        ? engine.facets[query](parameters)
+                                        : (console.log("NOT A FUNCTION", query, engine.facets[query]), engine.facets[query])
+                                )
                             );
-                        } else engine.bindings["facet:updated:" + query](engine.facets[query]);
+                        } else engine.bindings["facet:updated:" + query]?.forEach((f) => f?.(engine.facets[query]));
                     } else {
-                        console.error(`[EngineWrapper] MISSING FACET: ${query}`);
+                        console.error(`[EngineWrapper::trigger] MISSING FACET: ${query}`);
                         try {
-                            engine.bindings["facet:error:" + (requestId ?? query)](engine.facets[query]);
+                            engine.bindings["facet:error:" + (requestId ?? query)]?.forEach((f) => f?.(engine.facets[query]));
                         } catch {}
                     }
                     break;
+                }
                 case "core:exception":
-                    console.error(`[EngineWrapper] OreUI has reported exception: ${query}`);
+                    console.error(`[EngineWrapper::trigger] OreUI has reported exception:`, ...args);
+                    break;
+                case "query:subscribe/core.input":
+                    engine.bindings[`query:subscribed/${args[0]}`]?.forEach((f) => f?.(engine.facets["core.input"]({})));
                     break;
                 default:
-                    console.warn(`[EngineWrapper] OreUI triggered ${id} but we don't handle it!`);
+                    console.warn(`[EngineWrapper::trigger] OreUI triggered ${id} but we don't handle it!`, "Args:", ...args);
                     break;
             }
+            engine.bindings[id]?.forEach((f) => f?.(...args));
 
             return;
         }
     },
     TriggerEvent: {
-        apply: (_, [id, facet]) => {
+        apply: (_, [id, ...args]) => {
             while (true) {
                 if (!engine.WindowLoaded) continue;
                 switch (id) {
-                    case "facet:request":
-                        if (engine.facets.hasOwnProperty(facet)) {
-                            console.log(`[EngineWrapper] Sending Facet: ${facet}`);
-                            engine.bindings["facet:updated:" + facet](engine.facets[facet]);
+                    case "facet:request": {
+                        const [query, requestId, parameters] = args;
+                        if (engine.facets.hasOwnProperty(query)) {
+                            console.log(`[EngineWrapper::TriggerEvent] Sending Facet: ${query}`, args);
+                            if (requestId !== undefined) {
+                                console.log(id, query, requestId, parameters);
+                                engine.bindings["facet:updated:" + requestId](
+                                    typeof engine.facets[query] === "function"
+                                        ? engine.facets[query](parameters)
+                                        : (console.log("NOT A FUNCTION", query, engine.facets[query]), engine.facets[query])
+                                );
+                            } else engine.bindings["facet:updated:" + query]?.forEach((f) => f?.(engine.facets[query]));
                         } else {
-                            console.error(`[EngineWrapper] MISSING FACET: ${facet}`);
-                            engine.bindings["facet:error:" + facet](engine.facets[facet]);
+                            console.error(`[EngineWrapper::TriggerEvent] MISSING FACET: ${query}`);
+                            try {
+                                engine.bindings["facet:error:" + (requestId ?? query)]?.forEach((f) => f?.(engine.facets[query]));
+                            } catch {}
                         }
                         break;
+                    }
                     case "core:exception":
-                        console.error(`[EngineWrapper] OreUI has reported exception: ${facet}`);
+                        console.error(`[EngineWrapper::TriggerEvent] OreUI has reported exception:`, ...args);
                         break;
                     default:
-                        console.warn(`[EngineWrapper] OreUI triggered ${id} but we don't handle it!`);
+                        console.warn(`[EngineWrapper::TriggerEvent] OreUI triggered ${id} but we don't handle it!`, "Args:", ...args);
                         break;
                 }
+                engine.bindings[id]?.forEach((f) => f?.(...args));
 
                 return;
             }
