@@ -103,6 +103,33 @@ const RealmsStoriesTimelineOptInStatus = {
     None: 2,
 };
 
+//#region Gameplay Query Types
+
+const VanillaGameplayContainerChestType = {
+    Chest: 0,
+    TrappedChest: 1,
+    CopperChest: 2,
+    Barrel: 3,
+    EnderChest: 4,
+    ShulkerBox: 5,
+};
+
+const VanillaGameplayContainerItemType = {
+    Normal: 0,
+    CreativeRecipe: 1,
+    SurvivalRecipe: 2,
+    RecipePreview: 3,
+    Ghost: 4,
+};
+
+const VanillaGameplayUIProfile = {
+    Classic: 0,
+    Pocket: 1,
+    None: 2,
+};
+
+//#endregion
+
 module.exports = {
     ScreenType,
     HandheldDeviceType,
@@ -115,5 +142,9 @@ module.exports = {
     FriendPresence,
     FriendFavoriteStatus,
     RealmsStoriesTimelineOptInStatus,
+
+    VanillaGameplayContainerChestType,
+    VanillaGameplayContainerItemType,
+    VanillaGameplayUIProfile,
 };
 

@@ -5,15 +5,31 @@ const fs = require("fs");
 const path = require("path");
 const { Cubemap } = require("./libs/@hatchibombotar-cubemap");
 const { ipcRenderer } = require("electron/renderer");
+const { VanillaGameplayContainerChestType } = require("./src/types");
 /**
+ * The path to the config file.
+ *
  * @type {string}
  */
 const configPath = String(JSON.parse(process.argv.find((arg) => arg.startsWith("--config-path="))?.split("=")[1] || "null") ?? "./config.json");
 /**
+ * The path containing all of the facets.
+ *
  * @type {string}
  */
 const facetsPath = String(JSON.parse(process.argv.find((arg) => arg.startsWith("--facets-path="))?.split("=")[1] || "null") ?? __dirname + "/src/facets/");
 /**
+ * The path for where to look to resolve DDUI screen definitions.
+ *
+ * This should either be a folder containing the DDUI screen definitions from a resource pack, a resource pack, or a folder containing multiple resource packs
+ * (like the vanilla `C:/XboxGames/Minecraft Preview for Windows/Content/data/resource_packs/` folder).
+ *
+ * @type {string}
+ */
+const dduiPath = String(JSON.parse(process.argv.find((arg) => arg.startsWith("--ddui-path="))?.split("=")[1] || "null") ?? __dirname + "/src/ddui/");
+/**
+ * The path to the folder containing the cubemap images.
+ *
  * @type {string}
  */
 const cuebmapImagesPath = String(
@@ -45,8 +61,219 @@ const loadFacet = async (facet) => {
     }
 };
 
+/**
+ * Loads all the DDUI screens from the given folders.
+ *
+ * @param {string[]} folders The list of folders to search in, from lowest to highest priority.
+ * @returns {{[screenID: string]: Record<string, any>}} The loaded screen data.
+ */
+function getDDUIScreens(folders) {
+    /**
+     * @type {{[screenID: string]: Record<string, any>}}
+     */
+    const screens = {};
+    for (const folder of folders) {
+        const files = fs.readdirSync(folder, { withFileTypes: true, recursive: true }).filter((f) => f.isFile() && f.name.endsWith(".json"));
+        for (const file of files) {
+            try {
+                var screen = require(path.join(file.parentPath, file.name));
+            } catch (e) {
+                console.error("[EngineWrapper::getDDUIScreens] Error loading screen:", path.join(file.parentPath, file.name), e);
+            }
+            if (typeof screen["minecraft:ui-composition"]?.description?.identifier !== "string") {
+                console.warn("[EngineWrapper::getDDUIScreens] Skipping screen with no identifier:", path.join(file.parentPath, file.name), screen);
+            }
+            screens[screen["minecraft:ui-composition"]?.description?.identifier] = screen;
+        }
+    }
+    return screens;
+}
+
+/**
+ * Gets the list of folders to search for DDUI screens.
+ *
+ * @returns {string[]} The list of folders.
+ */
+function getDDUIScreensFolders() {
+    if (fs.existsSync(path.join(dduiPath, "ddui"))) return [path.join(dduiPath, "ddui")];
+    const folders = fs
+        .readdirSync(dduiPath, { withFileTypes: true })
+        .filter((dirent) => dirent.isDirectory() && fs.existsSync(path.join(dirent.parentPath, dirent.name, "ddui")))
+        .toSorted((a, b) =>
+            a.name.startsWith("vanilla") && !b.name.startsWith("vanilla")
+                ? 1
+                : b.name.startsWith("vanilla") && !a.name.startsWith("vanilla")
+                ? -1
+                : a.name.startsWith("vanilla") && b.name.startsWith("vanilla")
+                ? a.name === "vanilla"
+                    ? 1
+                    : b.name === "vanilla"
+                    ? -1
+                    : -a.name.localeCompare(b.name)
+                : a.name.localeCompare(b.name)
+        )
+        .map((dirent) => path.join(dirent.parentPath, dirent.name, "ddui"));
+    if (folders.length === 0) return [dduiPath];
+    return folders;
+}
+
+function resolveDDUIScreen(screen) {
+    /**
+     * @type {{children: any[]}}
+     */
+    const resolvedDDUIScreen = {
+        children: [],
+    };
+    function resolveComponent(component) {
+        const resolvedComponent = {
+            __Type: `DataDrivenUIGenericNode$_$${++lastDDUINodeID}`,
+            dynamicAttribs: component.attribs ? JSON.stringify(component.attribs) : null,
+            text: null, // TODO
+            children: component.children?.map((child) => resolveComponent(child)) ?? [],
+            tag: component.tag,
+        };
+        return resolvedComponent;
+    }
+    screen["minecraft:ui-composition"].layout.markup.forEach((child) => {
+        resolvedDDUIScreen.children.push(resolveComponent(child));
+    });
+    return resolvedDDUIScreen;
+}
+
 globalThis.engine = {
     facets: loadedFacets,
+    /**
+     * @type {{[key in keyof EngineQueryNonFacetResultMap]?: (...args: EngineQuerySubscribeEventParamsMap[key]) => EngineQueryNonFacetResultMap[key]}}
+     */
+    __queryResolvers__: {
+        "vanilla.core.dataDrivenUICompositionQuery"(screenID) {
+            const dduiScreens = getDDUIScreens(getDDUIScreensFolders());
+            return {
+                __Type: `vanilla.core.dataDrivenUICompositionQuery$_$${
+                    Object.keys(loadedFacets).length + Object.keys(engine.__queryResolvers__).indexOf("vanilla.core.dataDrivenUICompositionQuery")
+                }`,
+                children: [],
+                ...(dduiScreens[screenID] && resolveDDUIScreen(dduiScreens[screenID])),
+            };
+        },
+        "vanilla.gameplay.furnace"() {
+            return {
+                __Type: `vanilla.gameplay.furnace$_$${
+                    Object.keys(loadedFacets).length + Object.keys(engine.__queryResolvers__).indexOf("vanillaGameplayFurnace")
+                }`,
+                ...loadedFacets["vanilla.gameplay.furnace"](),
+            };
+        },
+        vanillaGameplayContainerItemQuery() {
+            return {
+                __Type: `vanillaGameplayContainerItemQuery$_$${
+                    Object.keys(loadedFacets).length + Object.keys(engine.__queryResolvers__).indexOf("vanillaGameplayContainerItemQuery")
+                }`,
+                amount: 69,
+                containerItemType: 0,
+                damageValue: 0,
+                hasDamageValue: false,
+                image: "/rp/textures/items/stick",
+                maxDamage: 0,
+                name: "Sticky the Stick",
+            };
+        },
+        vanillaGameplayContainerSizeQuery() {
+            return {
+                __Type: `vanillaGameplayContainerSizeQuery$_$${
+                    Object.keys(loadedFacets).length + Object.keys(engine.__queryResolvers__).indexOf("vanillaGameplayContainerSizeQuery")
+                }`,
+                size: 36,
+            };
+        },
+        vanillaGameplayContainerNameQuery() {
+            return {
+                __Type: `vanillaGameplayContainerNameQuery$_$${
+                    Object.keys(loadedFacets).length + Object.keys(engine.__queryResolvers__).indexOf("vanillaGameplayContainerNameQuery")
+                }`,
+                name: "CONTAINER TEST",
+            };
+        },
+        vanillaGameplayContainerChestTypeQuery() {
+            return {
+                __Type: `vanillaGameplayContainerChestTypeQuery$_$${
+                    Object.keys(loadedFacets).length + Object.keys(engine.__queryResolvers__).indexOf("vanillaGameplayContainerChestTypeQuery")
+                }`,
+                chestType: VanillaGameplayContainerChestType.Barrel,
+            };
+        },
+        vanillaGameplayRecipeBookFilteringQuery() {
+            return {
+                __Type: `vanillaGameplayRecipeBookFilteringQuery$_$${
+                    Object.keys(loadedFacets).length + Object.keys(engine.__queryResolvers__).indexOf("vanillaGameplayRecipeBookFilteringQuery")
+                }`,
+                isFiltering: false,
+            };
+        },
+        vanillaGameplayRecipeBookSearchStringQuery() {
+            return {
+                __Type: `vanillaGameplayRecipeBookSearchStringQuery$_$${
+                    Object.keys(loadedFacets).length + Object.keys(engine.__queryResolvers__).indexOf("vanillaGameplayRecipeBookSearchStringQuery")
+                }`,
+                searchString: "",
+            };
+        },
+        vanillaGameplayUIProfile() {
+            return {
+                __Type: `vanillaGameplayUIProfile$_$${
+                    Object.keys(loadedFacets).length + Object.keys(engine.__queryResolvers__).indexOf("vanillaGameplayUIProfile")
+                }`,
+                uiProfile: 0,
+            };
+        },
+        vanillaGameplayAnvilQuery() {
+            return {
+                __Type: `vanillaGameplayAnvilQuery$_$${Object.keys(__queryResolvers__).indexOf("vanillaGameplayAnvilQuery")}`,
+                costText: "69 Levels",
+                damageState: 1,
+                hasInputItem: true,
+                previewItemName: "Rick Astley",
+                shouldCrossOutIconBeVisible: false,
+            };
+        },
+        vanillaGameplayTradeOverviewQuery() {
+            return {
+                __Type: `vanillaGameplayTradeOverviewQuery$_$${Object.keys(__queryResolvers__).indexOf("vanillaGameplayTradeOverviewQuery")}`,
+                experiencePossibleProgress: 5,
+                experienceProgress: 0.6,
+                isExperienceBarVisible: true,
+                traderName: "Rick Astley",
+                tradeTiers: 5,
+            };
+        },
+        vanillaGameplayTradeTierQuery(tradeTier) {
+            return {
+                __Type: `vanillaGameplayTradeTierQuery$_$${Object.keys(__queryResolvers__).indexOf("vanillaGameplayTradeTierQuery")}`,
+                isTierUnlocked: true,
+                isTierVisible: true,
+                tierName: `Tier ${tradeTier} - ${["Never", "gonna", "give", "you", "up."][tradeTier] ?? "UNNAMED"}`,
+                tradeOffers: 2,
+            };
+        },
+        vanillaGameplayTradeOfferQuery(tradeTier, tradeIndex) {
+            return {
+                __Type: `vanillaGameplayTradeOfferQuery$_$${Object.keys(__queryResolvers__).indexOf("vanillaGameplayTradeOfferQuery")}`,
+                buyAItemAmount: 9999,
+                buyAItemImage: "pack://textures/items/diamond.png",
+                buyAItemName: "Diamond",
+                buyBItemAmount: 9999,
+                buyBItemImage: "pack://textures/items/netherite_ingot.png",
+                buyBItemName: "Netherite Ingot",
+                sellItemAmount: 1,
+                sellItemImage: "pack://textures/items/rotten_flesh.png",
+                sellItemName: "Rotten Flesh",
+                hasSecondaryBuyItem: true,
+                isOutOfUses: tradeTier === 2 && tradeIndex === 1,
+                isSelectedTrade: tradeTier === 1 && tradeIndex === 0,
+                playerHasItemsForTrade: true,
+            };
+        },
+    },
     bindings: {},
     WindowLoaded: false,
     BindingsReady: (...version) => console.log(`[EngineWrapper::BindingsReady] BindingsReady called (v${version.join(".")})`),
@@ -95,10 +322,22 @@ globalThis.engine = {
                     engine.bindings[`query:subscribed/${args[0]}`]?.forEach((f) => f?.(engine.facets["core.input"]({})));
                     break;
                 default:
-                    console.warn(`[EngineWrapper::trigger] OreUI triggered ${id} but we don't handle it!`, "Args:", ...args);
+                    if (id.startsWith("query:subscribe/")) {
+                        if (engine.__queryResolvers__[id.slice("query:subscribe/".length)]) {
+                            engine.bindings[`query:subscribed/${args[0]}`]?.forEach((f) =>
+                                f?.(engine.__queryResolvers__[id.slice("query:subscribe/".length)](...args.slice(1)))
+                            );
+                        } else if (engine.facets[id.slice("query:subscribe/".length)]) {
+                            engine.bindings[`query:subscribed/${args[0]}`]?.forEach((f) => f?.(engine.facets[id.slice("query:subscribe/".length)]({})));
+                        } else {
+                            console.error(`[EngineWrapper::trigger] MISSING QUERY RESOLVER: ${id}`, "Args:", ...args);
+                        }
+                    } else {
+                        console.warn(`[EngineWrapper::trigger] OreUI triggered ${id} but we don't handle it!`, "Args:", ...args);
+                    }
                     break;
             }
-            engine.bindings[id]?.forEach((f) => f?.(...args));
+            engine.bindings[id]?.forEach((f) => typeof f === "function" && f(...args));
 
             return;
         }
@@ -142,6 +381,10 @@ globalThis.engine = {
         },
     },
 };
+
+let lastDDUINodeID = Object.keys(loadedFacets).length + Object.keys(engine.__queryResolvers__).length - 1;
+
+// TODO: Add support for the vanilla commands (the global `__commands__` object).
 
 const facets = JSON.parse(fs.readFileSync(__dirname + "/src/facets.json"));
 (async () => {
