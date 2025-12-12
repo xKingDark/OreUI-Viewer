@@ -3,5 +3,6 @@
 /hbui
 /hbui-docs
 /src/texts
+/src/ddui
 /node_modules
 /pnpm-lock.yaml

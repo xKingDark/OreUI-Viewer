@@ -1,0 +1,136 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "config.schema.json",
+    "title": "Ore UI Viewer config.json Schema",
+    "description": "The JSON schema of the `config.json` file of the Ore UI Viewer.",
+
+    "default": {
+        "pathname": "/play",
+        "file": "/hbui/index.html",
+        "panorama": "copper-age",
+        "use_translation": true,
+        "locale": "en_US",
+        "texts_path": "./src/texts",
+        "ddui_path": "./src/ddui"
+    },
+    "type": "object",
+    "required": ["pathname", "file", "panorama", "use_translation"],
+    "properties": {
+        "$schema": {
+            "description": "The JSON schema of the `config.json` file of the Ore UI Viewer.",
+            "type": "string",
+            "default": "config.schema.json"
+        },
+        "pathname": {
+            "title": "Route",
+            "description": "The route in the UI to be opened upon starting the Ore UI Viewer.",
+            "type": "string",
+            "default": "/play"
+        },
+        "file": {
+            "title": "File",
+            "description": "The file to be opened upon starting the Ore UI Viewer.",
+            "type": "string",
+            "default": "/hbui/index.html",
+            "examples": ["/hbui/index.html", "/hbui/gameplay.html", "/hbui/editor.html"]
+        },
+        "panorama": {
+            "title": "Panorama",
+            "description": "The panorama to be used.",
+            "type": "string",
+            "default": "copper-age",
+            "enum": [
+                "beta",
+                "buzzy-bees",
+                "chase-the-skies",
+                "copper-age",
+                "creeking",
+                "education-demo",
+                "mounts-of-mayhem",
+                "preview",
+                "spring-to-life",
+                "trails-and-tales",
+                "tricky-trials",
+                "wild-update",
+                "windows-10-edition-beta"
+            ]
+        },
+        "use_translation": {
+            "title": "Use Translation",
+            "description": "Whether to resolve translation strings.",
+            "type": "boolean",
+            "default": true
+        },
+        "locale": {
+            "title": "Locale",
+            "description": "The locale to be used for resolving translation strings.\r\rOnly applies when `use_translation` is true.",
+            "type": "string",
+            "default": "en_US",
+            "examples": [
+                "en_US",
+                "en_GB",
+                "de_DE",
+                "es_ES",
+                "es_MX",
+                "fr_FR",
+                "fr_CA",
+                "it_IT",
+                "ja_JP",
+                "ko_KR",
+                "pt_BR",
+                "pt_PT",
+                "ru_RU",
+                "zh_CN",
+                "zh_TW",
+                "nl_NL",
+                "bg_BG",
+                "cs_CZ",
+                "da_DK",
+                "el_GR",
+                "fi_FI",
+                "hu_HU",
+                "id_ID",
+                "nb_NO",
+                "pl_PL",
+                "sk_SK",
+                "sv_SE",
+                "tr_TR",
+                "uk_UA"
+            ]
+        },
+        "texts_path": {
+            "title": "Texts Path",
+            "description": "The path for the folder containing the lang files.\r\rOnly applies when `use_translation` is true.",
+            "type": "string",
+            "default": "./src/texts"
+        },
+        "ddui_path": {
+            "title": "DDUI Path",
+            "description": "The path for where to look to resolve DDUI screen definitions.\r\rThis should either be a folder containing the DDUI screen definitions from a resource pack, a resource pack, or a folder containing multiple resource packs (like the vanilla `C:/XboxGames/Minecraft Preview for Windows/Content/data/resource_packs/` folder).",
+            "type": "string",
+            "default": "./src/ddui"
+        }
+    },
+    "allOf": [
+        {
+            "oneOf": [
+                {
+                    "required": ["use_translation", "locale"],
+                    "properties": {
+                        "use_translation": {
+                            "const": true
+                        }
+                    }
+                },
+                {
+                    "required": ["use_translation"],
+                    "properties": {
+                        "use_translation": {
+                            "const": false
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

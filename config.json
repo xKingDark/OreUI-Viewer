@@ -1,7 +1,10 @@
 {
-	"pathname": "/play",
-	"file": "/hbui/index.html",
-	"panorama": "chase-the-skies",
-	"use_translation": true,
-	"locale": "en_US"
+    "$schema": "config.schema.json",
+    "pathname": "/play",
+    "file": "/hbui/index.html",
+    "panorama": "mounts-of-mayhem",
+    "use_translation": true,
+    "locale": "en_US",
+    "texts_path": "./src/texts",
+    "ddui_path": "./src/ddui"
 }

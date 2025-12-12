@@ -1,4 +1,6 @@
+/* global __internal_Config__ */
 const fs = require("node:fs");
+const path = require("node:path");
 let translations = {
     // Default experimental toggle translations that aren't includes in the Ore UI lang files.
     "createWorldScreen.experimentalgameplay": "Experiments",
@@ -22,8 +24,44 @@ let translations = {
 if (__internal_Config__.use_translation) {
     console.log("[EngineWrapper/LocaleFacet] Loading " + __internal_Config__.locale + ".lang file...");
 
-    const locdat = fs.readFileSync((globalThis.textsPath ?? "./src/texts/") + __internal_Config__.locale + ".lang").toString();
-    for (const item of locdat.split("\n")) translations[item.split("=")[0]] = item.split("=").slice(1).join("=")?.replace("\r", "");
+    let locdat = "";
+
+    if (fs.existsSync(globalThis.textsPath + __internal_Config__.locale + ".lang")) {
+        locdat = fs.readFileSync(globalThis.textsPath + __internal_Config__.locale + ".lang").toString();
+    } else {
+        // Use a separate variable to keep track of whether the lang file was found, so that an error is not thrown if all found lang files are empty.
+        let langFileFound = false;
+        for (const dir of fs
+            .readdirSync(globalThis.textsPath, { withFileTypes: true })
+            .filter((dirent) => dirent.isDirectory())
+            .toSorted((a, b) =>
+                a.name.startsWith("vanilla") && !b.name.startsWith("vanilla")
+                    ? 1
+                    : b.name.startsWith("vanilla") && !a.name.startsWith("vanilla")
+                    ? -1
+                    : a.name.startsWith("vanilla") && b.name.startsWith("vanilla")
+                    ? a.name === "vanilla"
+                        ? 1
+                        : b.name === "vanilla"
+                        ? -1
+                        : -a.name.localeCompare(b.name)
+                    : a.name.localeCompare(b.name)
+            )) {
+            if (fs.existsSync(path.join(globalThis.textsPath, dir.name, "texts", __internal_Config__.locale + ".lang"))) {
+                locdat += fs.readFileSync(path.join(globalThis.textsPath, dir.name, "texts", __internal_Config__.locale + ".lang")).toString() + "\n";
+                langFileFound = true;
+                continue;
+            }
+            if (fs.existsSync(path.join(globalThis.textsPath, dir.name, __internal_Config__.locale + ".lang"))) {
+                locdat += fs.readFileSync(path.join(globalThis.textsPath, dir.name, __internal_Config__.locale + ".lang")).toString() + "\n";
+                langFileFound = true;
+                continue;
+            }
+        }
+        if (!langFileFound) throw new ReferenceError(`Locale file "${__internal_Config__.locale}.lang" not found.`);
+    }
+    locdat.replaceAll(/##[^\n\r]*/g, "");
+    for (const item of locdat.split(/[\n\r]+/g)) translations[item.split("=")[0]] = item.split("=").slice(1).join("=")?.replace("\r", "");
 }
 
 module.exports = () => ({
@@ -33,7 +71,7 @@ module.exports = () => ({
         if (__internal_Config__.use_translation) {
             let translation = translations[id];
             if (/%\d+|$s/g.test(translation)) {
-                for (i = 1; i <= params.length; i++) {
+                for (let i = 1; i <= params.length; i++) {
                     translation = translation?.replaceAll("%" + i + "$s", params[i - 1]);
                 }
             } else translation = translation?.replaceAll("%s", params[0]);
