@@ -30,5 +30,23 @@ module.exports = () => ({
         "vanilla.ab.newPlayScreenD",
         "vanilla.newFriendsDrawer",
         "vanilla.createFromAddOn",
+
+        // Newer
+        "vanilla.parties",
+        "vanilla.friendsDrawerPlayersInMyWorld",
+        "vanilla.newAccessibilitySettingsScreen",
+        "vanilla.newGeneralSettingsScreen",
+        "vanilla.newAccountSettingsScreen",
+        "vanilla.newAudioSettingsScreen",
+        "vanilla.newLanguageSettingsScreen",
+        "vanilla.newVideoSettingsScreen",
+        "vanilla.enableInboxServiceCategories",
+        "vanilla.usePersonaProfileImages",
+        "vanilla.createFromUXAndLink",
+        "vanilla.surfaceProfileReportButton",
+        "vanilla.newAchievementDesign",
+        "vanilla.ab.newPlayerPathV3.D.noControlScreen",
+        "core.textfield.pointerAuto",
     ],
 });
+
