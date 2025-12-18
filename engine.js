@@ -394,7 +394,7 @@ var engine = /** @satisfies {Engine} */ ({
         },
     },
     /**
-     * @type {{[key in EngineEventID<true>]?: ((...args: EngineEvent<EngineEventID extends key ? undefined : key, boolean>) => void)[] | undefined}}
+     * @type {{[key in EngineEventID]?: ((...args: EngineEvent<EngineEventID extends key ? undefined : key>) => void)[] | undefined}}
      */
     bindings: {},
     WindowLoaded: false,
@@ -415,7 +415,7 @@ var engine = /** @satisfies {Engine} */ ({
         }
     },
     RemoveOnHandler: (id, func, _) => console.log(`[EngineWrapper::RemoveOnHandler] RemoveOnHandler for ID ${id}. func: ${func}`),
-    trigger: /** @template {EngineEventID<true>} T @param {T} id @param {EngineEvent<EngineEventID extends T ? undefined : T, true>} args */ (id, ...args) => {
+    trigger: /** @template {EngineEventID} T @param {T} id @param {EngineEvent<EngineEventID extends T ? undefined : T>} args */ (id, ...args) => {
         /**
          * @type any
          */
@@ -791,11 +791,15 @@ __commands__ = {
     coreTranslateCommandGroup: {
         getHowLongAgoAsString: {
             id: 66,
-            callable(...args) {}, // TODO
+            callable(...args) {
+                return "0 seconds ago";
+            },
         },
         formatDate: {
             id: 65,
-            callable(...args) {}, // TODO
+            callable(timestampInSeconds) {
+                return new Date(timestampInSeconds * 1000).toLocaleDateString();
+            },
         },
         translate: {
             id: 64,
