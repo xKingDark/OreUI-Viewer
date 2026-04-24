@@ -4,13 +4,12 @@
 /**
  * @import {} from "ore-ui-types";
  */
-// NOTE: This module MUST be imported before v8-compile-cache.
-const { VanillaGameplayContainerChestType } = require("@ore-ui-types/enums");
 require("v8-compile-cache");
 const fs = require("fs");
 const path = require("path");
 const { Cubemap } = require("./libs/@hatchibombotar-cubemap");
 const { ipcRenderer } = require("electron/renderer");
+const { VanillaGameplayContainerChestType } = require("@ore-ui-types/enums");
 /**
  * The path to the config file.
  *
@@ -128,17 +127,13 @@ function getDDUIScreensFolders() {
         .readdirSync(dduiPath, { withFileTypes: true })
         .filter((dirent) => dirent.isDirectory() && fs.existsSync(path.join(dirent.parentPath, dirent.name, "ddui")))
         .toSorted((a, b) =>
-            a.name.startsWith("vanilla") && !b.name.startsWith("vanilla")
-                ? 1
-                : b.name.startsWith("vanilla") && !a.name.startsWith("vanilla")
-                ? -1
-                : a.name.startsWith("vanilla") && b.name.startsWith("vanilla")
-                ? a.name === "vanilla"
-                    ? 1
-                    : b.name === "vanilla"
-                    ? -1
-                    : -a.name.localeCompare(b.name)
-                : a.name.localeCompare(b.name)
+            a.name.startsWith("vanilla") && !b.name.startsWith("vanilla") ? 1
+            : b.name.startsWith("vanilla") && !a.name.startsWith("vanilla") ? -1
+            : a.name.startsWith("vanilla") && b.name.startsWith("vanilla") ?
+                a.name === "vanilla" ? 1
+                : b.name === "vanilla" ? -1
+                : -a.name.localeCompare(b.name)
+            :   a.name.localeCompare(b.name)
         )
         .map((dirent) => path.join(dirent.parentPath, dirent.name, "ddui"));
     if (folders.length === 0) return [dduiPath];
@@ -431,9 +426,9 @@ var engine = /** @satisfies {Engine} */ ({
                             console.log(id, query, requestId, parameters);
                             engine.bindings["facet:updated:" + requestId]?.forEach((f) =>
                                 f?.(
-                                    typeof engine.facets[query] === "function"
-                                        ? engine.facets[query](parameters)
-                                        : (console.log("NOT A FUNCTION", query, engine.facets[query]), engine.facets[query])
+                                    typeof engine.facets[query] === "function" ?
+                                        engine.facets[query](parameters)
+                                    :   (console.log("NOT A FUNCTION", query, engine.facets[query]), engine.facets[query])
                                 )
                             );
                         } else engine.bindings["facet:updated:" + query]?.forEach((f) => f?.(engine.facets[query]));
@@ -490,9 +485,9 @@ var engine = /** @satisfies {Engine} */ ({
                                 console.log(id, query, requestId, parameters);
                                 engine.bindings["facet:updated:" + requestId]?.forEach((f) =>
                                     f?.(
-                                        typeof engine.facets[query] === "function"
-                                            ? engine.facets[query](parameters)
-                                            : (console.log("NOT A FUNCTION", query, engine.facets[query]), engine.facets[query])
+                                        typeof engine.facets[query] === "function" ?
+                                            engine.facets[query](parameters)
+                                        :   (console.log("NOT A FUNCTION", query, engine.facets[query]), engine.facets[query])
                                     )
                                 );
                             } else engine.bindings["facet:updated:" + query]?.forEach((f) => f?.(engine.facets[query]));
@@ -882,7 +877,6 @@ const facets = JSON.parse(fs.readFileSync(__dirname + "/src/facets.json").toStri
 })();
 
 window.addEventListener("DOMContentLoaded", () => {
-    document.title = "Ore UI Preview";
     // @ts-expect-error: This should error when the value is undefined. When this is converted to TypeScript, make this use `!` instead.
     document.getElementsByTagName("body")[0].style = "user-select: none;";
 
@@ -927,6 +921,7 @@ window.addEventListener("DOMContentLoaded", () => {
     styleSheet.insertRule(`#root { position: absolute; z-index: 1000; }`, styleSheet.cssRules.length);
     styleSheet.insertRule(`::-webkit-scrollbar { width: 0; }`, styleSheet.cssRules.length);
     styleSheet.insertRule(`input { outline: none; }`, styleSheet.cssRules.length);
+    styleSheet.insertRule(`[cohinline] > * { display: inline; }`);
     styleSheet.insertRule(`.RdcBM { flex-wrap: unset; }`, styleSheet.cssRules.length);
     styleSheet.insertRule(
         ".iWrTh,.vPqz2,.XiGeZ,.MneaI," +
@@ -952,7 +947,8 @@ window.addEventListener("DOMContentLoaded", () => {
     styleSheet.insertRule(`.mSv3v { text-align: center; }`, styleSheet.cssRules.length);
 
     // To fix box sizing issues.
-    styleSheet.insertRule(`* { box-sizing: border-box; }`, styleSheet.cssRules.length);
+    styleSheet.insertRule(`* { box-sizing: border-box; }`, styleSheet.cssRules.length); // styleSheet.insertRule(`body * { box-sizing: border-box; display: flex; }`, styleSheet.cssRules.length); // TODO
+    styleSheet.insertRule(`p[cohinline] { display: inline-block; width: 100%; }`, styleSheet.cssRules.length);
     styleSheet.insertRule(
         `div:has(+div div+div):not(:has(+div div+div+div)):not(:has(> :nth-child(3))) div:first-child { min-height: auto; }`,
         styleSheet.cssRules.length

@@ -138,5 +138,8 @@
     "vanilla.realmsPurchaseCommands",
     "vanilla.realmsPurchaseReconcilerQueries",
     "vanilla.character-selector",
-    "vanilla.progressTracker"
+    "vanilla.progressTracker",
+
+    "vanilla.partyReceivedInviteList",
+    "vanilla.joinablePartyList"
 ]

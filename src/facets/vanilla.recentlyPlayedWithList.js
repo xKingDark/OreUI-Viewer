@@ -1,4 +1,5 @@
-module.exports = () => ({
+// @ts-check
+module.exports = /** @type {() => FacetTypeMap["vanilla.recentlyPlayedWithList"]} */ () => ({
     xboxAPICallResult: 0,
     playerList: [
         {

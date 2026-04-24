@@ -1,12 +1,13 @@
 // @ts-check
-module.exports = () => ({
+module.exports = /** @type {() => FacetTypeMap["vanilla.playerStatistics"]} */ () => ({
     loaded: true,
     load: (playerId) => {},
+    // @ts-ignore: Temporarily ignore errors on this property until it is added into the facet type.
     unload: () => {},
     data: [
         {
             label: "Time played",
-            icon: "/hbui/assets/IconClockGrey-ea564.png",
+            icon: 0,//"/hbui/assets/IconClockGrey-ea564.png",
             valueRaw: 117365,
             valueDisplay: "81d 12h 5m",
             currentUserValueRaw: 265150,
@@ -17,7 +18,7 @@ module.exports = () => ({
         },
         {
             label: "Blocks broken",
-            icon: "/hbui/assets/IconPickaxeGrey-cb118.png",
+            icon: 1,//"/hbui/assets/IconPickaxeGrey-cb118.png",
             currentUserValueNarration: "213077",
             currentUserValueDisplay: "213,077",
             currentUserValueRaw: 213077,
@@ -28,7 +29,7 @@ module.exports = () => ({
         },
         {
             label: "Mobs defeated",
-            icon: "/hbui/assets/IconSwordGrey-9087f.png",
+            icon: 2,//"/hbui/assets/IconSwordGrey-9087f.png",
             currentUserValueNarration: "6672",
             currentUserValueDisplay: "6,672",
             currentUserValueRaw: 6672,
@@ -39,7 +40,7 @@ module.exports = () => ({
         },
         {
             label: "Distance travelled",
-            icon: "/hbui/assets/IconBootsGrey-142a3.png",
+            icon: 3,//"/hbui/assets/IconBootsGrey-142a3.png",
             currentUserValueNarration: "700746505",
             currentUserValueDisplay: "700,746,505",
             currentUserValueRaw: 700746505,

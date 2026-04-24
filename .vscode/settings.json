@@ -7,5 +7,7 @@
             "fileMatch": ["/config.json"],
             "url": "/config.schema.json"
         }
-    ]
+    ],
+    "eslint.onIgnoredFiles": "off",
+    "eslint.useFlatConfig": false
 }
