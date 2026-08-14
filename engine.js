@@ -193,73 +193,69 @@ function resolveDDUIScreen(screen) {
     );
     return resolvedDDUIScreen;
 }
+/**
+ * The next ID that will be used for a query response.
+ */
+let queryResponseId = 0n;
 var engine = /** @satisfies {Engine} */ ({
     facets: loadedFacets,
     /**
      * @type {{[key in keyof EngineQueryNonFacetResultMap]?: (...args: EngineQuerySubscribeEventParamsMap[key] | (key extends keyof EngineQuerySubscribeEventDeprecatedParamsMap ? EngineQuerySubscribeEventDeprecatedParamsMap[key] : never)) => EngineQueryNonFacetResultMap[key]}}
      */
     __queryResolvers__: {
+        "core.device.display"() {
+            if (!loadedFacets["core.deviceInformation"]) throw new Error("Missing facet: core.deviceInformation");
+            const deviceInformationFacet = loadedFacets["core.deviceInformation"]({});
+            return {
+                __Type: `core.device.display$_$${queryResponseId++}`,
+                displayHeight: deviceInformationFacet.displayHeight ?? NaN,
+                displayWidth: deviceInformationFacet.displayWidth ?? NaN,
+                guiScaleBase: deviceInformationFacet.guiScaleBase ?? NaN,
+                guiScaleModifier: deviceInformationFacet.guiScaleModifier ?? NaN,
+                pixelsPerMillimeter: deviceInformationFacet.pixelsPerMillimeter ?? NaN,
+            };
+        },
+        "core.staticFeatureFlag"(featureFlagID) {
+            if (!loadedFacets["core.featureFlags"]) throw new Error("Missing facet: core.featureFlags");
+            const featureFlagsFacet = loadedFacets["core.featureFlags"]({});
+            return {
+                __Type: `core.staticFeatureFlag$_$${queryResponseId++}`,
+                enabled: featureFlagsFacet.flags.includes(featureFlagID),
+            };
+        },
         "vanilla.core.dataDrivenUICompositionQuery"(screenID) {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             const dduiScreens = getDDUIScreens(getDDUIScreensFolders());
             return {
-                __Type: `vanilla.core.dataDrivenUICompositionQuery$_$${
-                    Object.keys(loadedFacets).length + Object.keys(queryResolvers).indexOf("vanilla.core.dataDrivenUICompositionQuery")
-                }`,
+                __Type: `vanilla.core.dataDrivenUICompositionQuery$_$${queryResponseId++}`,
                 children: [],
                 ...(dduiScreens[screenID] && resolveDDUIScreen(dduiScreens[screenID])),
             };
         },
         "vanilla.gameplay.furnace"() {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanilla.gameplay.furnace$_$${Object.keys(loadedFacets).length + Object.keys(queryResolvers).indexOf("vanilla.gameplay.furnace")}`,
+                __Type: `vanilla.gameplay.furnace$_$${queryResponseId++}`,
                 // @ts-ignore: This should throw an error if the facet is not loaded.
                 ...loadedFacets["vanilla.gameplay.furnace"](),
             };
         },
         vanillaCoreDataDrivenUIDefinitionQuery(_unknownArg1, screenID) {
             // TODO: Use the unknownArg1 parameter (the first one) once it is figured out what it is.
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             const dduiScreens = getDDUIScreens(getDDUIScreensFolders());
             return {
-                __Type: `vanillaCoreDataDrivenUIDefinitionQuery$_$${
-                    Object.keys(loadedFacets).length + Object.keys(queryResolvers).indexOf("vanillaCoreDataDrivenUIDefinitionQuery")
-                }`,
+                __Type: `vanillaCoreDataDrivenUIDefinitionQuery$_$${queryResponseId++}`,
                 children: [],
                 ...(dduiScreens[screenID] && resolveDDUIScreen(dduiScreens[screenID])),
             };
         },
         vanillaCoreDataDrivenUIScreenIdQuery() {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanillaCoreDataDrivenUIScreenIdQuery$_$${
-                    Object.keys(loadedFacets).length + Object.keys(queryResolvers).indexOf("vanillaCoreDataDrivenUIScreenIdQuery")
-                }`,
+                __Type: `vanillaCoreDataDrivenUIScreenIdQuery$_$${queryResponseId++}`,
                 screenId: new URLSearchParams(loadedFacets["core.router"]?.().history.location.search).get("screenId") ?? null,
             };
         },
         vanillaGameplayContainerItemQuery() {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanillaGameplayContainerItemQuery$_$${
-                    Object.keys(loadedFacets).length + Object.keys(queryResolvers).indexOf("vanillaGameplayContainerItemQuery")
-                }`,
+                __Type: `vanillaGameplayContainerItemQuery$_$${queryResponseId++}`,
                 amount: 69,
                 containerItemType: 0,
                 damageValue: 0,
@@ -270,82 +266,44 @@ var engine = /** @satisfies {Engine} */ ({
             };
         },
         vanillaGameplayContainerSizeQuery() {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanillaGameplayContainerSizeQuery$_$${
-                    Object.keys(loadedFacets).length + Object.keys(queryResolvers).indexOf("vanillaGameplayContainerSizeQuery")
-                }`,
+                __Type: `vanillaGameplayContainerSizeQuery$_$${queryResponseId++}`,
                 size: 36,
             };
         },
         vanillaGameplayContainerNameQuery() {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanillaGameplayContainerNameQuery$_$${
-                    Object.keys(loadedFacets).length + Object.keys(queryResolvers).indexOf("vanillaGameplayContainerNameQuery")
-                }`,
+                __Type: `vanillaGameplayContainerNameQuery$_$${queryResponseId++}`,
                 name: "CONTAINER TEST",
             };
         },
         vanillaGameplayContainerChestTypeQuery() {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanillaGameplayContainerChestTypeQuery$_$${
-                    Object.keys(loadedFacets).length + Object.keys(queryResolvers).indexOf("vanillaGameplayContainerChestTypeQuery")
-                }`,
+                __Type: `vanillaGameplayContainerChestTypeQuery$_$${queryResponseId++}`,
                 chestType: VanillaGameplayContainerChestType.Barrel,
             };
         },
         vanillaGameplayRecipeBookFilteringQuery() {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanillaGameplayRecipeBookFilteringQuery$_$${
-                    Object.keys(loadedFacets).length + Object.keys(queryResolvers).indexOf("vanillaGameplayRecipeBookFilteringQuery")
-                }`,
+                __Type: `vanillaGameplayRecipeBookFilteringQuery$_$${queryResponseId++}`,
                 isFiltering: false,
             };
         },
         vanillaGameplayRecipeBookSearchStringQuery() {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanillaGameplayRecipeBookSearchStringQuery$_$${
-                    Object.keys(loadedFacets).length + Object.keys(queryResolvers).indexOf("vanillaGameplayRecipeBookSearchStringQuery")
-                }`,
+                __Type: `vanillaGameplayRecipeBookSearchStringQuery$_$${queryResponseId++}`,
                 searchString: "",
             };
         },
         vanillaGameplayUIProfile() {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanillaGameplayUIProfile$_$${Object.keys(loadedFacets).length + Object.keys(queryResolvers).indexOf("vanillaGameplayUIProfile")}`,
+                __Type: `vanillaGameplayUIProfile$_$${queryResponseId++}`,
                 uiProfile: 0,
             };
         },
         vanillaGameplayAnvilQuery() {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanillaGameplayAnvilQuery$_$${Object.keys(queryResolvers).indexOf("vanillaGameplayAnvilQuery")}`,
+                __Type: `vanillaGameplayAnvilQuery$_$${queryResponseId++}`,
                 costText: "69 Levels",
                 damageState: 1,
                 hasInputItem: true,
@@ -354,12 +312,8 @@ var engine = /** @satisfies {Engine} */ ({
             };
         },
         vanillaGameplayTradeOverviewQuery() {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanillaGameplayTradeOverviewQuery$_$${Object.keys(queryResolvers).indexOf("vanillaGameplayTradeOverviewQuery")}`,
+                __Type: `vanillaGameplayTradeOverviewQuery$_$${queryResponseId++}`,
                 experiencePossibleProgress: 5,
                 experienceProgress: 0.6,
                 isExperienceBarVisible: true,
@@ -368,12 +322,8 @@ var engine = /** @satisfies {Engine} */ ({
             };
         },
         vanillaGameplayTradeTierQuery(tradeTier) {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanillaGameplayTradeTierQuery$_$${Object.keys(queryResolvers).indexOf("vanillaGameplayTradeTierQuery")}`,
+                __Type: `vanillaGameplayTradeTierQuery$_$${queryResponseId++}`,
                 isTierUnlocked: true,
                 isTierVisible: true,
                 tierName: `Tier ${tradeTier} - ${["Never", "gonna", "give", "you", "up."][tradeTier] ?? "UNNAMED"}`,
@@ -381,12 +331,8 @@ var engine = /** @satisfies {Engine} */ ({
             };
         },
         vanillaGameplayTradeOfferQuery(tradeTier, tradeIndex) {
-            /**
-             * @type {any}
-             */
-            const queryResolvers = engine.__queryResolvers__;
             return {
-                __Type: `vanillaGameplayTradeOfferQuery$_$${Object.keys(queryResolvers).indexOf("vanillaGameplayTradeOfferQuery")}`,
+                __Type: `vanillaGameplayTradeOfferQuery$_$${queryResponseId++}`,
                 buyAItemAmount: 9999,
                 buyAItemImage: "pack://textures/items/diamond.png",
                 buyAItemName: "Diamond",
@@ -400,6 +346,42 @@ var engine = /** @satisfies {Engine} */ ({
                 isOutOfUses: tradeTier === 2 && tradeIndex === 1,
                 isSelectedTrade: tradeTier === 1 && tradeIndex === 0,
                 playerHasItemsForTrade: true,
+            };
+        },
+        // TODO: The below party queries should have data synced with the query facets.
+        "vanilla.currentParty.membersQuery"() {
+            // TEMP: Add some actual fake data here, rather than null data, maybe make it so the party can be actually left (until reload).
+            return {
+                __Type: `vanilla.currentParty.membersQuery$_$${queryResponseId++}`,
+                leaderXuid: "",
+                maxMemberCount: 15,
+                members: [],
+                pendingInvitees: [],
+            };
+        },
+        "vanilla.currentParty.dataQuery"() {
+            // TEMP: Add some actual fake data here, rather than null data, maybe make it so the party can be actually left (until reload).
+            return {
+                __Type: `vanilla.currentParty.dataQuery$_$${queryResponseId++}`,
+                isInParty: false,
+                partyId: "",
+                privacy: 1,
+                restrictInvitesToLeader: false,
+            };
+        },
+        "vanilla.currentParty.destinationQuery"() {
+            // TEMP: Add some actual fake data here, rather than null data, maybe make it so the party can be actually left and the destination name can be set (until reload).
+            return {
+                __Type: `vanilla.currentParty.destinationQuery$_$${queryResponseId++}`,
+                destinationName: "",
+                shouldShowJoinDestination: false,
+            };
+        },
+        "vanilla.partyChat.unreadMessagesQuery"() {
+            // TEMP: Add some actual fake data here, rather than null data, maybe make it so the party messages can be marked as read (until reload).
+            return {
+                __Type: `vanilla.partyChat.unreadMessagesQuery$_$${queryResponseId++}`,
+                hasUnreadMessages: false,
             };
         },
     },
