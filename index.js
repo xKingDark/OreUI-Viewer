@@ -1,6 +1,6 @@
 require("v8-compile-cache");
 require("@electron/remote/main").initialize();
-const { app, BrowserWindow, globalShortcut, Menu } = require("electron");
+const { app, BrowserWindow, globalShortcut, Menu, protocol, net } = require("electron");
 const express = require("express");
 const server = express();
 server.use(express.static(__dirname));
@@ -25,6 +25,22 @@ const registerShortcuts = () => {
     globalShortcut.register("Control+R", () => false);
     globalShortcut.register("Control+Shift+R", () => false);
 };
+
+app.whenReady(() => {
+    protocol.handle("local-file", (request) => {
+        const url = new URL(request.url);
+
+        const targetUrl = `file://${url.hostname}${url.pathname}${url.search}`;
+
+        return net.fetch(targetUrl, {
+            method: request.method,
+            headers: {
+                ...request.headers,
+            },
+            body: request.body,
+        });
+    });
+});
 
 const createWindow = () => {
     console.log("\x1B[0m" + new Date().toLocaleTimeString() + " \x1B[33m\x1B[1m[INFO] \x1B[0m- Creating the window");

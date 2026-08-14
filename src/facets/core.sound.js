@@ -1,4 +1,6 @@
 const fs = require("node:fs");
+const path = require("node:path");
+const json5 = require("json5");
 
 /**
  * @type {Map<number, HTMLAudioElement>}
@@ -6,6 +8,140 @@ const fs = require("node:fs");
 const currentlyPlayingSounds = new Map();
 
 let nextSoundId = 0;
+
+const vanillaRPSounds = {};
+
+/**
+ * @type {Record<string, string | null>}
+ * @type {Record<`sounds/${string}`, string | null>} - This is the real type.
+ */
+const vanillaRPResolvedSoundPathsCache = {};
+const vanillaResourcePacksDirs =
+    globalThis.vanillaResourcePacksPath ?
+        fs.existsSync(path.join(globalThis.vanillaResourcePacksPath, "sounds/sound_definitions.json")) ?
+            false
+        :   fs
+                .readdirSync(globalThis.vanillaResourcePacksPath, { withFileTypes: true })
+                .filter((dirent) => dirent.isDirectory() && fs.existsSync(path.join(globalThis.vanillaResourcePacksPath, dirent.name, "sounds")))
+                .toSorted((a, b) =>
+                    a.name.startsWith("vanilla") && !b.name.startsWith("vanilla") ? 1
+                    : b.name.startsWith("vanilla") && !a.name.startsWith("vanilla") ? -1
+                    : a.name.startsWith("vanilla") && b.name.startsWith("vanilla") ?
+                        a.name === "vanilla" ? 1
+                        : b.name === "vanilla" ? -1
+                        : -a.name.localeCompare(b.name)
+                    :   a.name.localeCompare(b.name)
+                )
+    :   null;
+
+if (!fs.existsSync(__dirname + "/../../hbui/sound_definitions.json")) {
+    try {
+        if (fs.existsSync(path.join(globalThis.vanillaResourcePacksPath, "sounds/sound_definitions.json"))) {
+            const soundDefinitions = json5.parse(fs.readFileSync(path.join(globalThis.vanillaResourcePacksPath, "sounds/sound_definitions.json")).toString());
+            if ("sound_definitions" in soundDefinitions) {
+                for (const [id, data] of Object.entries(soundDefinitions.sound_definitions)) {
+                    vanillaRPSounds[id] = data /* {
+                        ...data,
+                        // sounds: data.sounds.map((sound) => ({ name: path.join(globalThis.vanillaResourcePacksPath, sound.name), ...sound })),
+                        sounds: data.sounds.map((sound) => ({ name: sound.name, ...sound })),
+                    } */;
+                }
+            }
+        } else {
+            // /**
+            //  * @type {Record<string, string>}
+            //  * @type {Record<`sounds/${string}`, string>} - This is the real type.
+            //  */
+            // const soundPaths = {};
+            for (const dir of vanillaResourcePacksDirs) {
+                try {
+                    if (fs.existsSync(path.join(globalThis.vanillaResourcePacksPath, dir.name, "sounds/sound_definitions.json"))) {
+                        const soundDefinitions = json5.parse(
+                            fs.readFileSync(path.join(globalThis.vanillaResourcePacksPath, dir.name, "sounds/sound_definitions.json")).toString()
+                        );
+                        if ("sound_definitions" in soundDefinitions) {
+                            for (const [id, data] of Object.entries(soundDefinitions.sound_definitions)) {
+                                vanillaRPSounds[id] ??= data /* {
+                                    ...data,
+                                    sounds: data.sounds.map((sound) => ({ name: sound.name, ...sound })),
+                                } */;
+                            }
+                        }
+                        continue;
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+            // /**
+            //  * @type {string[]}
+            //  * @type {`sounds/${string}`[]} - This is the real type.
+            //  */
+            // const soundsToMap = [...new Set(Object.values(vanillaRPSounds).flatMap((v) => v.sounds.map((v) => v.name).filter((v) => v !== undefined)))];
+            // for (const dir of vanillaResourcePacksDirs) {
+            //     try {
+            //         for (const file of soundsToMap) {
+            //             if (file in soundPaths) continue;
+            //             if (
+            //                 ![".fsb", ".ogg", ".mp3", ".wav", ""].some((ext) =>
+            //                     fs.existsSync(path.join(globalThis.vanillaResourcePacksPath, dir.name, `${file}${ext}`))
+            //                 )
+            //             ) {
+            //                 continue;
+            //             }
+            //             soundPaths[file] ??= path.join(globalThis.vanillaResourcePacksPath, dir.name, file);
+            //         }
+            //     } catch (e) {
+            //         console.error(e);
+            //     }
+            // }
+            // console.log(soundPaths);
+            // for (const [id, data] of Object.entries(vanillaRPSounds)) {
+            //     vanillaRPSounds[id] = {
+            //         ...data,
+            //         sounds: data.sounds.map((sound) => ({ name: soundPaths[sound.name], ...sound })).filter((sound) => sound.name),
+            //     };
+            // }
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+/**
+ * Gets the real path for a sound from the vanilla resource packs from the given relative asset path.
+ *
+ * @param {string} name The asset path relative to the pack root.
+ * @returns {string | undefined} The real path, or `undefined` if the sound file was not found.
+ */
+function resolveVanillaRPSound(name) {
+    if (vanillaRPResolvedSoundPathsCache[name]) return vanillaRPResolvedSoundPathsCache[name];
+    if (vanillaResourcePacksDirs === false) {
+        try {
+            for (const ext of [".fsb", ".ogg", ".mp3", ".wav", ""]) {
+                const soundPath = path.join(globalThis.vanillaResourcePacksPath, `${name}${ext}`);
+                if (!fs.existsSync(soundPath)) continue;
+                vanillaRPResolvedSoundPathsCache[name] ||= soundPath;
+                return soundPath;
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    for (const dir of vanillaResourcePacksDirs) {
+        try {
+            for (const ext of [".fsb", ".ogg", ".mp3", ".wav", ""]) {
+                const soundPath = path.join(globalThis.vanillaResourcePacksPath, dir.name, `${name}${ext}`);
+                if (!fs.existsSync(soundPath)) continue;
+                vanillaRPResolvedSoundPathsCache[name] ||= soundPath;
+                return soundPath;
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    return undefined;
+}
 
 module.exports = () => ({
     /**
@@ -18,25 +154,60 @@ module.exports = () => ({
      */
     play: (sound, volume, pitch) => {
         console.log(`[EngineWrapper/SoundFacet] Sound ${sound} requested.`);
-        try {
-            /**
-             * @type {typeof import("../../hbui/sound_definitions.json")}
-             */
-            const soundDefinitions = require(__dirname + "/../../hbui/sound_definitions.json", { encoding: "utf-8" });
-            console.log(soundDefinitions, sound);
-            if (soundDefinitions[sound] && soundDefinitions[sound].sounds.length != false) {
-                const soundDefinition = soundDefinitions[sound];
-                const audio = new Audio(soundDefinition.sounds[Math.floor(Math.random() * soundDefinition.sounds.length)].name);
-                audio.volume = volume ?? 1;
-                audio.preservesPitch = false;
-                audio.playbackRate = pitch ?? 1;
-                currentlyPlayingSounds.set(nextSoundId++, audio);
-                audio.play().then(() => {
-                    currentlyPlayingSounds.delete(nextSoundId - 1);
-                });
+        if (!fs.existsSync(__dirname + "/../../hbui/sound_definitions.json")) {
+            try {
+                const soundDefinition = vanillaRPSounds[sound];
+                const sounds = soundDefinition?.sounds.filter((sound) => vanillaRPResolvedSoundPathsCache[sound.name] !== null);
+                if (soundDefinition && sounds.length != false) {
+                    /**
+                     * @type {string | undefined}
+                     */
+                    let soundPath;
+                    while (sounds.length && soundPath === undefined) {
+                        const index = Math.floor(Math.random() * sounds.length);
+                        const soundName = sounds[index].name;
+                        soundPath = resolveVanillaRPSound(soundName);
+                        if (soundPath === undefined) sounds.splice(index, 1);
+                    }
+                    if (soundPath === undefined) return;
+                    console.log(sound, soundPath);
+                    const audio = new Audio(`local-file:${soundPath}`);
+                    audio.volume = volume ?? 1;
+                    audio.preservesPitch = false;
+                    audio.playbackRate = pitch ?? 1;
+                    const soundId = nextSoundId++;
+                    currentlyPlayingSounds.set(soundId, audio);
+                    audio.play().then(() => {
+                        currentlyPlayingSounds.delete(soundId);
+                    });
+                    return soundId;
+                }
+            } catch (e) {
+                console.error(e);
             }
-        } catch (e) {
-            console.error(e);
+        } else {
+            try {
+                /**
+                 * @type {typeof import("../../hbui/sound_definitions.json")}
+                 */
+                const soundDefinitions = require(__dirname + "/../../hbui/sound_definitions.json", { encoding: "utf-8" });
+                console.log(soundDefinitions, sound);
+                if (soundDefinitions[sound] && soundDefinitions[sound].sounds.length != false) {
+                    const soundDefinition = soundDefinitions[sound];
+                    const audio = new Audio(soundDefinition.sounds[Math.floor(Math.random() * soundDefinition.sounds.length)].name);
+                    audio.volume = volume ?? 1;
+                    audio.preservesPitch = false;
+                    audio.playbackRate = pitch ?? 1;
+                    const soundId = nextSoundId++;
+                    currentlyPlayingSounds.set(soundId, audio);
+                    audio.play().then(() => {
+                        currentlyPlayingSounds.delete(soundId);
+                    });
+                    return soundId;
+                }
+            } catch (e) {
+                console.error(e);
+            }
         }
     },
     /**
@@ -74,4 +245,3 @@ module.exports = () => ({
         return typeof id === "number" ? currentlyPlayingSounds.has(id) : undefined;
     },
 });
-

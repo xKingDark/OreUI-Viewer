@@ -17,7 +17,7 @@ const { VanillaGameplayContainerChestType } = require("@ore-ui-types/enums");
  */
 const configPath = String(JSON.parse(process.argv.find((arg) => arg.startsWith("--config-path="))?.split("=")[1] || "null") ?? "./config.json");
 /**
- * @type {{ pathname: string; file: string; panorama: string; texts_path?: string | undefined; ddui_path?: string | undefined; } & ({ use_translation: true; locale: string; } | { use_translation: false; locale?: string | undefined; })}
+ * @type {{ pathname: string; file: string; panorama: string; texts_path?: string | undefined; ddui_path?: string | undefined; vanilla_resource_packs_path?: string | undefined; } & ({ use_translation: true; locale: string; } | { use_translation: false; locale?: string | undefined; })}
  */
 globalThis.__internal_Config__ =
     JSON.parse(JSON.parse(process.argv.find((arg) => arg.startsWith("--config-data="))?.split("=")[1] || '"null"')) ?? require(configPath);
@@ -39,6 +39,21 @@ const dduiPath = String(
     JSON.parse(process.argv.find((arg) => arg.startsWith("--ddui-path="))?.split("=")[1] || "null") ??
         path
             .resolve(__dirname, __internal_Config__.ddui_path ?? "./src/ddui/")
+            .replaceAll("\\", "/")
+            .replace(/(?<!\/)$/, "/")
+);
+/**
+ * The path for where to look to resolve vanilla resource pack assets.
+ *
+ * This should either be a resource pack or a folder containing multiple resource packs
+ * (like the vanilla `C:/XboxGames/Minecraft Preview for Windows/Content/data/resource_packs/` folder).
+ *
+ * @type {string}
+ */
+globalThis.vanillaResourcePacksPath = String(
+    JSON.parse(process.argv.find((arg) => arg.startsWith("--vanilla-resource-packs-path="))?.split("=")[1] || "null") ??
+        path
+            .resolve(__dirname, __internal_Config__.vanilla_resource_packs_path ?? "./src/vanilla_resource_packs/")
             .replaceAll("\\", "/")
             .replace(/(?<!\/)$/, "/")
 );
