@@ -19,8 +19,7 @@ const configPath = String(JSON.parse(process.argv.find((arg) => arg.startsWith("
 /**
  * @type {{ pathname: string; file: string; panorama: string; texts_path?: string | undefined; ddui_path?: string | undefined; vanilla_resource_packs_path?: string | undefined; } & ({ use_translation: true; locale: string; } | { use_translation: false; locale?: string | undefined; })}
  */
-globalThis.__internal_Config__ =
-    JSON.parse(JSON.parse(process.argv.find((arg) => arg.startsWith("--config-data="))?.split("=")[1] || '"null"')) ?? require(configPath);
+globalThis.__internal_Config__ = require(configPath);
 /**
  * The path containing all of the facets.
  *
