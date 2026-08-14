@@ -873,6 +873,33 @@ const facets = JSON.parse(fs.readFileSync(__dirname + "/src/facets.json").toStri
 						*/
 })();
 
+{
+    const importMapElement = document.createElement("script");
+    importMapElement.type = "importmap";
+
+    importMapElement.textContent = JSON.stringify(
+        {
+            imports: {
+                "@ore-ui-types/enums": "/hbui/@ore-ui-types/enums",
+            },
+        },
+        null,
+        4
+    );
+
+    if (document.documentElement) {
+        document.documentElement.appendChild(importMapElement);
+    } else {
+        const observer = new MutationObserver(() => {
+            if (document.documentElement) {
+                document.documentElement.appendChild(importMapElement);
+                observer.disconnect();
+            }
+        });
+        observer.observe(document, { childList: true, subtree: true });
+    }
+}
+
 window.addEventListener("DOMContentLoaded", () => {
     // @ts-expect-error: This should error when the value is undefined. When this is converted to TypeScript, make this use `!` instead.
     document.getElementsByTagName("body")[0].style = "user-select: none;";
