@@ -47,6 +47,14 @@ module.exports = () => ({
         "vanilla.newAchievementDesign",
         "vanilla.ab.newPlayerPathV3.D.noControlScreen",
         "core.textfield.pointerAuto",
+
+        "vanilla.realmsOreUIPurchaseEnabled",
+        "vanilla.ab.newPlayerPathV3.B.noSignInScreen",
+        "vanilla.editor.paneCollapseAPI",
+        "vanilla.editor.toolGrouping",
+        "vanilla.editor.structureCRUD",
+        "vanilla.editor.experimentalFeature",
+        "vanilla.oreUIGameplay",
     ],
 });
 
