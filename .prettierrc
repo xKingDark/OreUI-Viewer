@@ -1,7 +1,7 @@
 {
     "arrowParens": "always",
     "bracketSpacing": true,
-    "endOfLine": "crlf",
+    "endOfLine": "auto",
     "htmlWhitespaceSensitivity": "css",
     "insertPragma": false,
     "singleAttributePerLine": false,
@@ -20,11 +20,17 @@
     "embeddedLanguageFormatting": "auto",
     "vueIndentScriptAndStyle": false,
     "experimentalTernaries": true,
-    "plugins": [],
+    "plugins": ["prettier-plugin-markdown-list-tabwidth"],
     "objectWrap": "preserve",
     "overrides": [
         {
             "files": ".hintrc",
+            "options": {
+                "parser": "json"
+            }
+        },
+        {
+            "files": ".eslintrc",
             "options": {
                 "parser": "json"
             }
