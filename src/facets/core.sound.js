@@ -18,9 +18,9 @@ const vanillaRPSounds = {};
 const vanillaRPResolvedSoundPathsCache = {};
 const vanillaResourcePacksDirs =
     globalThis.vanillaResourcePacksPath ?
-        fs.existsSync(path.join(globalThis.vanillaResourcePacksPath, "sounds/sound_definitions.json")) ?
-            false
-        :   fs
+        fs.existsSync(path.join(globalThis.vanillaResourcePacksPath, "sounds/sound_definitions.json")) ? false
+        : fs.existsSync(globalThis.vanillaResourcePacksPath) ?
+            fs
                 .readdirSync(globalThis.vanillaResourcePacksPath, { withFileTypes: true })
                 .filter((dirent) => dirent.isDirectory() && fs.existsSync(path.join(globalThis.vanillaResourcePacksPath, dirent.name, "sounds")))
                 .toSorted((a, b) =>
@@ -32,9 +32,10 @@ const vanillaResourcePacksDirs =
                         : -a.name.localeCompare(b.name)
                     :   a.name.localeCompare(b.name)
                 )
+        :   null
     :   null;
 
-if (!fs.existsSync(__dirname + "/../../hbui/sound_definitions.json")) {
+if (!fs.existsSync(__dirname + "/../../hbui/sound_definitions.json") && vanillaResourcePacksDirs) {
     try {
         if (fs.existsSync(path.join(globalThis.vanillaResourcePacksPath, "sounds/sound_definitions.json"))) {
             const soundDefinitions = json5.parse(fs.readFileSync(path.join(globalThis.vanillaResourcePacksPath, "sounds/sound_definitions.json")).toString());
@@ -156,6 +157,7 @@ module.exports = () => ({
         console.log(`[EngineWrapper/SoundFacet] Sound ${sound} requested.`);
         if (!fs.existsSync(__dirname + "/../../hbui/sound_definitions.json")) {
             try {
+                if (!vanillaResourcePacksDirs) throw new Error("[EngineWrapper/SoundFacet] No sound sources available.");
                 const soundDefinition = vanillaRPSounds[sound];
                 const sounds = soundDefinition?.sounds.filter((sound) => vanillaRPResolvedSoundPathsCache[sound.name] !== null);
                 if (soundDefinition && sounds.length != false) {
