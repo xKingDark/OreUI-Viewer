@@ -1,6 +1,7 @@
 require("v8-compile-cache");
 require("@electron/remote/main").initialize();
 const { app, BrowserWindow, globalShortcut, Menu, protocol, net } = require("electron");
+
 const express = require("express");
 const server = express();
 server.use(express.static(__dirname));
@@ -11,26 +12,10 @@ app.on("window-all-closed", () => app.quit());
 app.on("ready", () => {
     console.log("\x1B[0m" + new Date().toLocaleTimeString() + " \x1B[33m\x1B[1m[INFO] \x1B[0m- Starting.");
 
-    if (!debug) registerShortcuts();
-    server.listen(port, () => {
-        console.log(
-            "\x1B[0m" + new Date().toLocaleTimeString() + " \x1B[33m\x1B[1m[INFO] \x1B[0m- The server is now running on port \x1B[33m" + port + "\x1B[0m!"
-        );
-
-        createWindow();
-    });
-});
-
-const registerShortcuts = () => {
-    globalShortcut.register("Control+R", () => false);
-    globalShortcut.register("Control+Shift+R", () => false);
-};
-
-app.whenReady(() => {
     protocol.handle("ui", (request) => {
         const url = new URL(request.url);
 
-        const targetUrl = `http://localhost:${port}${url.hostname ? `/${url.hostname}` : ""}${url.pathname}${url.search}`;
+        const targetUrl = `http://127.0.0.1:${port}${url.hostname ? `/${url.hostname}` : ""}${url.pathname}${url.search}`;
 
         return net.fetch(targetUrl, {
             method: request.method,
@@ -53,7 +38,32 @@ app.whenReady(() => {
             body: request.body,
         });
     });
+
+    if (!debug) registerShortcuts();
+    server.listen(port, () => {
+        console.log(
+            "\x1B[0m" + new Date().toLocaleTimeString() + " \x1B[33m\x1B[1m[INFO] \x1B[0m- The server is now running on port \x1B[33m" + port + "\x1B[0m!"
+        );
+
+        createWindow();
+    });
 });
+
+const registerShortcuts = () => {
+    globalShortcut.register("Control+R", () => false);
+    globalShortcut.register("Control+Shift+R", () => false);
+};
+
+protocol.registerSchemesAsPrivileged([
+    {
+        scheme: "ui",
+        privileges: { bypassCSP: true, secure: true, standard: true, supportFetchAPI: true },
+    },
+    {
+        scheme: "local-file",
+        privileges: { bypassCSP: true, secure: true, standard: false, supportFetchAPI: true, stream: true },
+    },
+]);
 
 const createWindow = () => {
     console.log("\x1B[0m" + new Date().toLocaleTimeString() + " \x1B[33m\x1B[1m[INFO] \x1B[0m- Creating the window");
@@ -106,5 +116,5 @@ const createWindow = () => {
     app.setAppUserModelId("Minecraft - OreUI");
 
     win.show();
-    win.loadURL("http://127.0.0.1:3000/hbui");
+    win.loadURL(`http://127.0.0.1:${port}/hbui`);
 };
