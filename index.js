@@ -27,6 +27,19 @@ const registerShortcuts = () => {
 };
 
 app.whenReady(() => {
+    protocol.handle("ui", (request) => {
+        const url = new URL(request.url);
+
+        const targetUrl = `http://localhost:${port}${url.hostname ? `/${url.hostname}` : ""}${url.pathname}${url.search}`;
+
+        return net.fetch(targetUrl, {
+            method: request.method,
+            headers: {
+                ...request.headers,
+            },
+            body: request.body,
+        });
+    });
     protocol.handle("local-file", (request) => {
         const url = new URL(request.url);
 
