@@ -1,0 +1,4 @@
+https://github.com/KatieFrogs/vgmstream-web/tree/c615e1a9704fe1b79cc46b8bea3a249504465f9a
+https://vgmstream.org/web/version
+https://vgmstream.org/web/vgmstream-cli.js
+https://vgmstream.org/web/vgmstream-cli.wasm

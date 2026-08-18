@@ -2,8 +2,10 @@ require("v8-compile-cache");
 require("@electron/remote/main").initialize();
 const { app, BrowserWindow, globalShortcut, Menu, protocol, net } = require("electron");
 
+const path = require("node:path");
 const express = require("express");
 const server = express();
+server.use("/__vgmstream__", express.static(path.join(__dirname, "libs/vgmstream")));
 server.use(express.static(__dirname));
 
 const debug = true;
@@ -84,6 +86,7 @@ const createWindow = () => {
             webgl: true,
             webSecurity: true,
             nodeIntegration: true,
+            nodeIntegrationInWorker: true,
             contextIsolation: false,
             enableRemoteModule: true,
             additionalArguments: [

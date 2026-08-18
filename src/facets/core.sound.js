@@ -1,6 +1,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const json5 = require("json5");
+const { convertFile } = require("../../libs/vgmstream/worker-wrapper.js");
 
 /**
  * @type {Map<number, HTMLAudioElement>}
@@ -144,6 +145,37 @@ function resolveVanillaRPSound(name) {
     return undefined;
 }
 
+/**
+ * Converts an FSB audio file.
+ *
+ * @param {string} filePath The file path.
+ * @returns {Promise<string>} A promise resolving with a blob URL of the converted audio data in WAV format.
+ */
+async function convertFSBAudio(filePath) {
+    return (await convertFile(new File([await require("node:fs/promises").readFile(filePath)], path.basename(filePath)))).url;
+}
+
+/**
+ * Creates an {@link HTMLAudioElement} element from an FSB audio file.
+ *
+ * @param {string} filePath The file path.
+ * @returns {Promise<HTMLAudioElement>}
+ */
+async function createFSBAudio(filePath) {
+    return new Audio(await convertFSBAudio(filePath));
+}
+
+/**
+ * Converts an FSB audio file and adds it to a provided {@link HTMLAudioElement}.
+ *
+ * @param {string} filePath The file path.
+ * @param {HTMLAudioElement} audio The {@link HTMLAudioElement} instance.
+ * @returns {Promise<HTMLAudioElement>} A promise that resolves with the provided {@link HTMLAudioElement} once the FSB audio file has been converted.
+ */
+function createFSBAudioSync(filePath, audio) {
+    return convertFSBAudio(filePath).then((url) => ((audio.src = url), audio));
+}
+
 module.exports = () => ({
     /**
      * Plays a sound.
@@ -172,16 +204,24 @@ module.exports = () => ({
                         if (soundPath === undefined) sounds.splice(index, 1);
                     }
                     if (soundPath === undefined) return;
-                    console.log(sound, soundPath);
-                    const audio = new Audio(`local-file:${soundPath}`);
+                    // console.log(sound, soundPath);
+                    const audio = soundPath.endsWith(".fsb") ? new Audio() : new Audio(`local-file:${soundPath}`);
                     audio.volume = volume ?? 1;
                     audio.preservesPitch = false;
                     audio.playbackRate = pitch ?? 1;
                     const soundId = nextSoundId++;
                     currentlyPlayingSounds.set(soundId, audio);
-                    audio.play().then(() => {
-                        currentlyPlayingSounds.delete(soundId);
-                    });
+                    if (soundPath.endsWith(".fsb")) {
+                        createFSBAudioSync(soundPath, audio).then(() => {
+                            audio.play().then(() => {
+                                currentlyPlayingSounds.delete(soundId);
+                            });
+                        });
+                    } else {
+                        audio.play().then(() => {
+                            currentlyPlayingSounds.delete(soundId);
+                        });
+                    }
                     return soundId;
                 }
             } catch (e) {
@@ -193,18 +233,27 @@ module.exports = () => ({
                  * @type {typeof import("../../hbui/sound_definitions.json")}
                  */
                 const soundDefinitions = require(__dirname + "/../../hbui/sound_definitions.json", { encoding: "utf-8" });
-                console.log(soundDefinitions, sound);
+                // console.log(soundDefinitions, sound);
                 if (soundDefinitions[sound] && soundDefinitions[sound].sounds.length != false) {
                     const soundDefinition = soundDefinitions[sound];
-                    const audio = new Audio(soundDefinition.sounds[Math.floor(Math.random() * soundDefinition.sounds.length)].name);
+                    const soundPath = soundDefinition.sounds[Math.floor(Math.random() * soundDefinition.sounds.length)].name;
+                    const audio = soundPath.endsWith(".fsb") ? new Audio() : new Audio(soundPath);
                     audio.volume = volume ?? 1;
                     audio.preservesPitch = false;
                     audio.playbackRate = pitch ?? 1;
                     const soundId = nextSoundId++;
                     currentlyPlayingSounds.set(soundId, audio);
-                    audio.play().then(() => {
-                        currentlyPlayingSounds.delete(soundId);
-                    });
+                    if (soundPath.endsWith(".fsb")) {
+                        createFSBAudioSync(__dirname + "/../.." + soundPath, audio).then(() => {
+                            audio.play().then(() => {
+                                currentlyPlayingSounds.delete(soundId);
+                            });
+                        });
+                    } else {
+                        audio.play().then(() => {
+                            currentlyPlayingSounds.delete(soundId);
+                        });
+                    }
                     return soundId;
                 }
             } catch (e) {
