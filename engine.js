@@ -971,7 +971,7 @@ window.addEventListener("DOMContentLoaded", () => {
     styleSheet.insertRule(`.mSv3v { text-align: center; }`, styleSheet.cssRules.length);
 
     // To fix box sizing issues.
-    styleSheet.insertRule(`* { box-sizing: border-box; }`, styleSheet.cssRules.length); // styleSheet.insertRule(`body * { box-sizing: border-box; display: flex; }`, styleSheet.cssRules.length); // TODO
+    styleSheet.insertRule(`* { box-sizing: border-box; flex-shrink: 0; }`, styleSheet.cssRules.length); // styleSheet.insertRule(`body * { box-sizing: border-box; display: flex; }`, styleSheet.cssRules.length); // TODO
     styleSheet.insertRule(`p[cohinline] { display: inline-block; width: 100%; }`, styleSheet.cssRules.length);
     styleSheet.insertRule(
         `div:has(+div div+div):not(:has(+div div+div+div)):not(:has(> :nth-child(3))) div:first-child { min-height: auto; }`,
