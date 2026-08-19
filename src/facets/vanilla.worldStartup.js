@@ -1,13 +1,16 @@
 // @ts-check
-module.exports = () => ({
+/** @type {Record<string, boolean>} */
+const platformLockedWorlds = {};
+
+module.exports = /** @type {() => FacetTypeMap["vanilla.worldStartup"]} */ () => ({
     missingPacksToStart: [],
     backupThenStartLocalWorld: {
         progress: null,
         state: 0,
         result: null,
-        run: "function run() { [native code] }",
-        cancel: "function cancel() { [native code] }",
-        clear: "function clear() { [native code] }",
+        run() {},
+        cancel() {},
+        clear() {},
     },
     startLocalWorld: Object.assign(
         function startLocalWorld(/** @type {unknown} */ worldId) {
@@ -30,6 +33,12 @@ module.exports = () => ({
     hasMissingResources: false,
     startLocalWorldTaskState: 0,
     startLocalWorldResult: null,
+    setConfirmedPlatformLockedContentForWorld(worldId) {
+        platformLockedWorlds[worldId] = true;
+        return null;
+    },
+    hasConfirmedPlatformLockedContentForWorld(worldId) {
+        return platformLockedWorlds[worldId] ?? false;
+    },
     clearStartLocalWorldResult() {},
 });
-
