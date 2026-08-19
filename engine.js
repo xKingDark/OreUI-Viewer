@@ -9,7 +9,7 @@ const fs = require("fs");
 const path = require("path");
 const { Cubemap } = require("./libs/@hatchibombotar-cubemap");
 const { ipcRenderer } = require("electron/renderer");
-const { VanillaGameplayContainerChestType } = require("@ore-ui-types/enums");
+const { VanillaGameplayContainerChestType, StorageType } = require("@ore-ui-types/enums");
 /**
  * The path to the config file.
  *
@@ -215,12 +215,118 @@ var engine = /** @satisfies {Engine} */ ({
                 pixelsPerMillimeter: deviceInformationFacet.pixelsPerMillimeter ?? NaN,
             };
         },
+        "core.device.network"() {
+            if (!loadedFacets["core.deviceInformation"]) throw new Error("Missing facet: core.deviceInformation");
+            const deviceInformationFacet = /** @type {Required<FacetTypeMap["core.deviceInformation"]>} */ (loadedFacets["core.deviceInformation"]({}));
+            return {
+                __Type: `core.device.network$_$${queryResponseId++}`,
+                isOnline: deviceInformationFacet.isOnline,
+                showCellularDataFee: deviceInformationFacet.showCellularDataFee,
+                onlyCellularAvailable: deviceInformationFacet.onlyCellularAvailable,
+                supportsManualAddedServers: deviceInformationFacet.supportsManualAddedServers,
+                isLANAllowed: deviceInformationFacet.isLANAllowed,
+                isAdHocModeActive: false,
+                defaultNetworkMaxPlayers: 8,
+            };
+        },
+        "core.device.platform"() {
+            if (!loadedFacets["core.deviceInformation"]) throw new Error("Missing facet: core.deviceInformation");
+            const deviceInformationFacet = /** @type {Required<FacetTypeMap["core.deviceInformation"]>} */ (loadedFacets["core.deviceInformation"]({}));
+            return {
+                __Type: `core.device.platform$_$${queryResponseId++}`,
+                inputMethods: deviceInformationFacet.inputMethods,
+                type: deviceInformationFacet.platform,
+            };
+        },
+        "core.device.storage"() {
+            if (!loadedFacets["core.deviceInformation"]) throw new Error("Missing facet: core.deviceInformation");
+            const deviceInformationFacet = /** @type {Required<FacetTypeMap["core.deviceInformation"]>} */ (loadedFacets["core.deviceInformation"]({}));
+            return {
+                __Type: `core.device.storage$_$${queryResponseId++}`,
+                isStorageFull: deviceInformationFacet.isStorageFull,
+                isStorageLow: deviceInformationFacet.isStorageLow,
+                isUsingAppDataStorage: deviceInformationFacet.storageType === StorageType.APPDATA,
+                isUsingExternalStorage: deviceInformationFacet.storageType === StorageType.EXTERNAL,
+                storageAvailableSize: deviceInformationFacet.storageAvailableSize,
+                storageSize: deviceInformationFacet.storageSize,
+                storageUsed: deviceInformationFacet.storageUsed,
+                supportsSizeQuery: deviceInformationFacet.supportsSizeQuery,
+            };
+        },
+        "core.cloudStorage"() {
+            return {
+                __Type: `core.cloudStorage$_$${queryResponseId++}`,
+                cloudStorageSupported: true,
+                storageSize: Math.pow(1024, 3) * 4,
+                storageUsed: Math.pow(1024, 3) * 3,
+                storageAvailableSize: "4.3GB", // TEMP: Figure out if this is actually GiB or GB and whether it is actually the full storageSize, storage remaining, storageUsed, or a different measurement.
+                storagePercentage: 0.75, // TEMP: Figure out of this is supposed to be a 0-1 scale or a 0-100 scale.
+                isStorageFull: false,
+                isStorageLow: false,
+            };
+        },
         "core.staticFeatureFlag"(featureFlagID) {
             if (!loadedFacets["core.featureFlags"]) throw new Error("Missing facet: core.featureFlags");
             const featureFlagsFacet = loadedFacets["core.featureFlags"]({});
             return {
                 __Type: `core.staticFeatureFlag$_$${queryResponseId++}`,
                 enabled: featureFlagsFacet.flags.includes(featureFlagID),
+            };
+        },
+        "core.flightingToggle"(flightingToggleID) {
+            const activeFlightingToggles = [
+                "mc-editor-default-actionbar-crosshair",
+                "mc-editor-default-actionbar-export",
+                "mc-editor-default-actionbar-hotbar",
+                "mc-editor-default-actionbar-keyboard-settings",
+                "mc-editor-default-actionbar-structures",
+                "mc-create-from-add-on",
+                "mc-disable-animated-sign-in-screens",
+                "vanilla.friendsDrawerPlayersInMyWorld",
+                "mc-hide-ping-and-count",
+                "mc-editor-tutorial-hotbar-switch-progress",
+                "mc-new-accessibility-settings-screen",
+                "mc-new-account-settings-screen",
+                "mc-new-audio-settings-screen",
+                "mc-new-game-settings-screen",
+                "mc-new-general-settings-screen",
+                "mc-new-language-settings-screen",
+                "vanilla.newMultiplayerSettingsScreen",
+                "mc-new-video-settings-screen",
+                "mc-new-enable-cloud-storage-manager",
+                "mc-parties-chat",
+                "mc-realms-pdp-members-cf",
+                "mc-realms-plan-picker",
+                "mc-realms-terms",
+                "vanilla.screenshotsGallery",
+                "vanilla.screenshotsShowcase",
+                "vanilla.editor.tooltips.showGifs",
+                "mc-editor-tutorial-show-video-link",
+                "mc-surface-profile-report-button",
+                "mc-use-persona-profile-images",
+                "mc-create-from-mpp-banner",
+                "mc-mpp-free-weekend",
+                "mc-servers-tab-v2",
+                "mc-cf-price-no-creator",
+                "mc-cf-price-no-rating",
+                "mc-servers-tab-v1-layout-service",
+            ];
+            return {
+                __Type: `core.flightingToggle$_$${queryResponseId++}`,
+                enabled: activeFlightingToggles.includes(flightingToggleID),
+            };
+        },
+        "core.flightingConfig.bool"(flightingConfigEntryID) {
+            const activeFlightingConfig = [
+                "enable-send-xbl-friend-requests",
+                "enable-view-xbl-friend-requests",
+                "show-xbl-friends-not-follows",
+                "parties-travel-to-external",
+                "parties-travel-to-experiences",
+            ];
+            return {
+                __Type: `core.flightingConfig.bool$_$${queryResponseId++}`,
+                value: activeFlightingConfig.includes(flightingConfigEntryID),
             };
         },
         "vanilla.core.dataDrivenUICompositionQuery"(screenID) {
@@ -382,6 +488,89 @@ var engine = /** @satisfies {Engine} */ ({
             return {
                 __Type: `vanilla.partyChat.unreadMessagesQuery$_$${queryResponseId++}`,
                 hasUnreadMessages: false,
+            };
+        },
+        "vanilla.receivedFriendRequests"() {
+            if (!loadedFacets["vanilla.recommendedFriendsList"]) throw new Error("Missing facet: vanilla.recommendedFriendsList");
+            const recommendedFriendsList = loadedFacets["vanilla.recommendedFriendsList"]();
+            return {
+                __Type: `vanilla.receivedFriendRequests$_$${queryResponseId++}`,
+                isLoading: recommendedFriendsList.isLoading,
+                playerList: recommendedFriendsList.playerList
+                    .filter((v) => v.isFollowingMe && !v.isFollowedByMe)
+                    .map((v) => ({
+                        __Type: `AddFriendObject$_$${queryResponseId++}`,
+                        ...v,
+                        isFriend: false,
+                        isFriendRequestReceived: true,
+                        isFriendRequestSent: false,
+                    })),
+                xboxAPICallResult: recommendedFriendsList.xboxAPICallResult,
+            };
+        },
+        "vanilla.menus.buildInfoQuery"() {
+            return {
+                __Type: `vanilla.menus.buildInfoQuery$_$${queryResponseId++}`,
+                treatments:
+                    "T: Beetroot Soup, \nMagenta Base Sinister Canton, \nWandering Trader Spawn Egg, \nWhite Per Bend Sinister, \nOrange Lozenge, \nSnow Golem Spawn Egg, \nNetherite Ingot, \nPaper, \nRed Snapper, \nOrange Globe, \nGreen Bordure Indented, \nRed Per Bend Sinister, \nNPC Spawn Egg, \nCyan Bordure, \nOrange Per Fess Inverted, \nRed Snout, \nBlack Tang, \nWhite Inverted Chevron, \nBrewing Stand, \nLight Gray Dye, \nGray Field Masoned, \nFeather, \nLight Gray Field Masoned, \nBlue Base Sinister Canton, \nC418 - 11, \nWhite Bend, \nGreen Gradient, \nGray Bend Sinister, \nGreen Per Bend Sinister Inverted, \nGlass Bottle, \nMagenta Bend Sinister, \nYellow Pale, \nBrown Banner, \nDiamond, \nGray Chief Indented, \nLight Blue Chevron, \nYellow Flower Charge, \nLime Roundel, \nLime Pale Dexter, \nPotato, \nLime Globe, \nMagenta Globe, \nOrange Field Masoned, \nCyan, \nBrown Gradient, \nPink Pale Sinister, \nEnd Rod, \nEye of Ender, \nBlack Pale Sinister, \nGolden Boots, \nAcacia Door, \nOrange Pale Sinister, \nLight Blue, \nOak Door, \nLime Flower Charge, \nGray Snout, \nGray Thing, \nCookie, \nBlack Per Pale Inverted, \nLight Gray Snout, \nLight Gray Bend Sinister, \nGray Bordure Indented, \nCookie[ntrol], \nBrown Pale Dexter, \nPink Chief Dexter Canton, \nTrail, \nC418 - 13, \nBlue Gradient, \nLime Pale Dexter[creen], \nBrown Field Masoned, \nGray Per Fess, \nJungle Door, \nGolden Carrot, \nLight Blue Chief Indented, \nLight Gray Paly, \nBrown Per Bend, \nRedstone Dust, \nPurple Bordure, \nBlack Flower Charge, \nRed Bend, \nGray Pale Dexter, \nGreen Bordure Indented[rawer], \nWhite Chief Sinister Canton, \nCyan Bordure[icons], \nTurtle Scute, \nRed Chief Sinister Canton, \nChainmail Leggings, \nBurst\n\nR: Light Gray Pale Dexter, \nCyan Bordure[ments], \nLime Thing, \nWarped Door, \nWhite Per Pale, \nC418 - strad, \nPink Base Gradient, \nMagenta Lozenge, \nDark Oak Door, \nMagenta Base Sinister Canton[pt_in], \nGoat Spawn Egg, \nGray Field Masoned[_tabs], \nZombie Villager Spawn Egg, \nWhite Chief Indented, \nElytra, \nPurple Cross, \nCyan Bend, \nGray Base Fess, \nSkeleton Skull, \nGray Skull Charge, \nMagenta Flower Charge, \nGreen Per Pale Inverted, \nGolden Chestplate, \nPaper[_flow], \nGhast Spawn Egg, \nBlack Inverted Chevron, \nStick, \nLight Blue Bordure Indented",
+                canCopyToClipboard: true,
+            };
+        },
+        "vanilla.menus.localWorldListQuery"() {
+            if (!loadedFacets["vanilla.localWorldList"]) throw new Error("Missing facet: vanilla.localWorldList");
+            const localWorldListFacet = loadedFacets["vanilla.localWorldList"]();
+            return {
+                __Type: `vanilla.menus.localWorldListQuery$_$${queryResponseId++}`,
+                worlds: localWorldListFacet.localWorlds.map((v) => ({
+                    __Type: `LocalWorldListEntry$_$${queryResponseId++}`,
+                    id: v.id,
+                    name: v.name,
+                    allContentOwned: v.allContentOwned,
+                })),
+            };
+        },
+        "vanilla.menus.localWorldQuery"(worldId) {
+            if (!loadedFacets["vanilla.localWorldList"]) throw new Error("Missing facet: vanilla.localWorldList");
+            const localWorldListFacet = loadedFacets["vanilla.localWorldList"]();
+            const worldData = /** @type {Required<LocalWorldDataType> | undefined} */ (localWorldListFacet.localWorlds.find((v) => v.id === worldId));
+            return {
+                __Type: `vanilla.menus.localWorldQuery$_$${queryResponseId++}`,
+                ...(worldData ?? {
+                    gameVersion: {
+                        __Type: `gameVersion$_$${queryResponseId++}`,
+                        major: 0,
+                        minor: 0,
+                        patch: 0,
+                        revision: 0,
+                        isBeta: false,
+                    },
+                    templateVersion: {
+                        __Type: `templateVersion$_$${queryResponseId++}`,
+                        major: 0,
+                        minor: 0,
+                        patch: 0,
+                        revision: 0,
+                        isBeta: false,
+                    },
+                    id: worldId,
+                    name: "",
+                    lastSaved: 0,
+                    gameMode: -1,
+                    fileSize: "",
+                    previewImgPath: "",
+                    isExperimental: false,
+                    isHardcore: false,
+                    playerHasDied: false,
+                    daysPlayed: 0,
+                    showDaysPlayed: false,
+                    isTemplateCompatibleWithAnyVersion: false,
+                    allContentOwned: true,
+                    requiresCloudSync: false,
+                    isMultiplayerEnabled: false,
+                    xblBroadcastIntent: 0,
+                    isEditorWorld: false,
+                    cloudSyncState: null,
+                }),
             };
         },
     },
