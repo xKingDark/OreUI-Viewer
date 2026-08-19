@@ -722,29 +722,30 @@ let lastDDUINodeID = Object.keys(loadedFacets).length + Object.keys(globalThis.e
 // TODO: Add support for the vanilla commands (the global `__commands__` object).
 // Initialize the variable if it doesn't exist.
 globalThis.__commands__ ??= /** @type {any} */ ({});
+let lastCommandId = 0;
 // Assign the value to the variable.
 __commands__ = {
     vanillaCoreDataStoreSetCommandGroup: {
         dataStoreButtonPress: {
-            id: 109,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         setDataStorePathBool: {
-            id: 108,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         setDataStorePathNumber: {
-            id: 107,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         setDataStorePathString: {
-            id: 106,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
     },
     vanillaGameplayAnvilCommandGroup: {
         setPreviewItemName: {
-            id: 105,
+            id: ++lastCommandId,
             callable(itemName) {
                 return null;
             }, // TODO
@@ -752,7 +753,7 @@ __commands__ = {
     },
     vanillaGameplayRecipeBookFilteringCommandGroup: {
         setRecipeBookFiltering: {
-            id: 104,
+            id: ++lastCommandId,
             callable(enabled) {
                 return null;
             }, // TODO
@@ -760,7 +761,7 @@ __commands__ = {
     },
     vanillaGameplayRecipeBookSearchStringCommandGroup: {
         setRecipeBookSearchString: {
-            id: 103,
+            id: ++lastCommandId,
             callable(searchString) {
                 return null;
             }, // TODO
@@ -768,19 +769,19 @@ __commands__ = {
     },
     vanillaGameplayTradeCommandGroup: {
         performAutoTrade: {
-            id: 102,
+            id: ++lastCommandId,
             callable(tradeTier, tradeIndex) {
                 return null;
             }, // TODO
         },
         pullInIngredientsForSelectedTrade: {
-            id: 101,
+            id: ++lastCommandId,
             callable() {
                 return null;
             }, // TODO
         },
         selectTrade: {
-            id: 100,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
@@ -788,101 +789,101 @@ __commands__ = {
     },
     vanillaGameplayContainerCommandGroup: {
         autoCraftAllItemsFromRecipe: {
-            id: 99,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         autoCraftOneItemFromRecipe: {
-            id: 98,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         selectRecipe: {
-            id: 97,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         setDistributeAllSource: {
-            id: 96,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         splitSingleItem: {
-            id: 95,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         splitMultipleItems: {
-            id: 94,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         autoPlaceItems: {
-            id: 93,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         coalesceOrAutoPlaceItems: {
-            id: 92,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         coalesceItems: {
-            id: 91,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         dropOneItem: {
-            id: 90,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         dropAllItems: {
-            id: 89,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         placeAmountOfItems: {
-            id: 88,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         placeOneItem: {
-            id: 87,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         placeAllItems: {
-            id: 86,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         takeHalfItems: {
-            id: 85,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         takeOneItem: {
-            id: 84,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         takeAllItems: {
-            id: 83,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
         },
         closeContainer: {
-            id: 82,
+            id: ++lastCommandId,
             callable(...args) {
                 return null;
             }, // TODO
@@ -890,80 +891,84 @@ __commands__ = {
     },
     vanillaGameInviteCommandGroup: {
         invitePlatformPlayers: {
-            id: 81,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         inviteXboxPlayers: {
-            id: 80,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
     },
     vanilla_partyChatCommandGroup: {
         setIsOpen: {
-            id: 79,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         setComposedMessage: {
-            id: 78,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         sendComposedMessage: {
-            id: 77,
+            id: ++lastCommandId,
             callable() {
                 return null;
             },
         },
     },
     vanilla_menus_invoke_action_settings: {
+        cancelAsyncAction: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
         invokeAction: {
-            id: 76,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
     },
     coreScreenReaderCommandGroup: {
         read: {
-            id: 75,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         clear: {
-            id: 74,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
     },
     routerCommandGroup: {
         go: {
-            id: 73,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         back: {
-            id: 72,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         replace: {
-            id: 71,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         push: {
-            id: 70,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
     },
     soundCommandGroup: {
         isPlaying: {
-            id: 69,
+            id: ++lastCommandId,
             callable(id) {
                 return loadedFacets["core.sound"]?.()?.isPlaying(id) ?? false;
             },
         },
         fadeOut: {
-            id: 68,
+            id: ++lastCommandId,
             callable(id, duration) {
                 loadedFacets["core.sound"]?.()?.fadeOut(id, duration);
                 return null;
             },
         },
         play: {
-            id: 67,
+            id: ++lastCommandId,
             callable(sound, volume, pitch) {
                 return loadedFacets["core.sound"]?.()?.play(sound, volume, pitch) ?? -1;
             },
@@ -971,19 +976,19 @@ __commands__ = {
     },
     coreTranslateCommandGroup: {
         getHowLongAgoAsString: {
-            id: 66,
+            id: ++lastCommandId,
             callable(...args) {
                 return "0 seconds ago";
             },
         },
         formatDate: {
-            id: 65,
+            id: ++lastCommandId,
             callable(timestampInSeconds) {
                 return new Date(timestampInSeconds * 1000).toLocaleDateString();
             },
         },
         translate: {
-            id: 64,
+            id: ++lastCommandId,
             callable(key, parameters) {
                 return loadedFacets["core.locale"]?.()?.translateWithParameters(key, parameters) ?? key;
             },
@@ -991,34 +996,384 @@ __commands__ = {
     },
     coreStorageCommandGroup: {
         changeStorage: {
-            id: 63,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
     },
     vanilla_menus_update_settings: {
+        commitString: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
         updateNumber: {
-            id: 62,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         updateString: {
-            id: 61,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         updateOption: {
-            id: 60,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
         updateBoolean: {
-            id: 59,
+            id: ++lastCommandId,
             callable(...args) {}, // TODO
         },
     },
     coreHapticsCommandGroup: {
         vibrate: {
-            id: 58,
+            id: ++lastCommandId,
             callable(duration) {
                 return null;
             },
+        },
+    },
+    coreApplicationCommandGroup: {
+        exit: {
+            id: ++lastCommandId,
+            callable() {
+                window.close();
+            },
+        },
+    },
+    vanillaGameplayContainerAPICommands: {
+        setPreviewItemName: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        performAutoTrade: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        pullInIngredientsForSelectedTrade: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        selectTrade: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        setRecipeBookTab: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        setRecipeBookFiltering: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        setRecipeBookSearchString: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        setDistributeAllSource: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        resetSplitStack: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        splitSingleItem: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        splitMultipleItemsTouch: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        splitMultipleItems: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        autoPlaceItems: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        coalesceOrAutoPlaceItems: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        coalesceItems: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        dropOneItem: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        dropAllItems: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        placeAmountOfItems: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        placeOneItem: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        placeAllItems: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        takeHalfItems: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        takeOneItem: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        takeAllItems: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        handleBackgroundMouseRelease: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        handlePanelMouseRelease: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        handleSlotMouseDrag: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        handleSlotMouseRelease: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        handleSlotMousePress: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        closeContainer: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    editorTelemetryCommandGroup: {
+        fireScriptAction: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanillaGameplayLocalPlayerWakeUpCommand: {
+        wakeUp: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanillaGameplayLocalPlayerRespawnCommand: {
+        respawn: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    realmsServerSettingsCommandGroup: {
+        setRealmsServerSimDist: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        setRealmsServerRenderDist: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        setRealmsServerMaxPlayerCount: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        setRealmsServerMode: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        fetchRealmsServerSettings: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanillaRealmsSavesCommandGroup: {
+        cancelBackupDownload: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        downloadBackup: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        renameBackup: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        deleteBackup: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        restoreBackup: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        saveAutoBackup: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        saveBackup: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        fetchActiveWorldSize: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        fetchBackupList: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanillaRealmsMembersCommandGroup: {
+        addRealmMembers: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanillaAdminLogCommandGroup: {
+        fetchAdminLogs: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanilla_menus_auto_save_warning_screen: {
+        acknowledge: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanilla_menus_tts_warning_screen: {
+        disableTTS: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        markTTSShown: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        doesLanguageSupportTts: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    personaCommands: {
+        equipDefaultSkin: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    ClientUpdatesCommandGroup: {
+        launchStoreForClientUpdates: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanilla_socialSystemCommandGroup: {
+        setPollingForReceivedRequests: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        reportIsDrawerVisible: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanilla_inboxCommandGroup: {
+        reportSubmit: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        reportClick: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanillaGameplayLeaveGameCommandGroup: {
+        leaveGameThenJoinFriendsWorld: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        leaveGame: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanillaWorldStorageCommandGroup: {
+        deleteWorld: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanillaWorldCloudSyncCommandGroup: {
+        setCloudSaved: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        setLocalOnly: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanillaStorageManagerCommandGroup: {
+        convertOldWorld: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        deleteSelectedItems: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        setAllSelected: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        setSelected: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanilla_menus_safe_zone_warning_screen: {
+        markShown: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        setSafeZone: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    editorContentBadgeCommandGroup: {
+        restoreAllBadges: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        clearAllBadges: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        clearBadge: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+        setSuppressNewBadges: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
+        },
+    },
+    vanillaRealmsDeleteCommandGroup: {
+        deleteRealm: {
+            id: ++lastCommandId,
+            callable(...args) {}, // TODO
         },
     },
 };
