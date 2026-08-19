@@ -99,7 +99,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 isBlocked: false,
                 isMuted: false,
                 qrCode: "/hbui/assets/qr_placeholder-83885.png",
-                url: "https://launch.minecraft.net/profile/iiDarkGamerYT",
+                url: "https://launch.minecraft.net/profile/xK1ngDark" /* "https://launch.minecraft.net/profile/iiDarkGamerYT" */,
                 offlineName: "xKingDarkOfflineEdition",
                 platformName: "",
                 platformProfilePic: "",
@@ -189,8 +189,8 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
             data: /**
              * @satisfies {ReturnType<FacetTypeMap["vanilla.playerProfile"]["playerProfiles"]["slice"]>[0]["data"] & Record<"gamerTag" | "gamerIcon" | "isOnline" | "isCurrentlyPlaying", string | boolean>}
              */ {
-                xuid: "2535440895442815",
-                gamerTag: "iiDarkGamerYT",
+                xuid: "2535447190358939" ,
+                gamerTag: "xK1ngDark" /* "iiDarkGamerYT" */,
                 // @ts-ignore
                 playingOnServerId: undefined,
                 isOnline: false,
@@ -210,13 +210,13 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 isBlocked: false,
                 isMuted: false,
                 qrCode: "/hbui/assets/qr_placeholder-83885.png",
-                url: "https://launch.minecraft.net/profile/iiDarkGamerYT",
+                url: "https://launch.minecraft.net/profile/xK1ngDark" /* "https://launch.minecraft.net/profile/iiDarkGamerYT" */,
                 offlineName: "King :3",
                 platformName: "",
                 platformProfilePic: "",
                 realName: "xKing Dark",
                 relation: PlayerRelation.TwoWayFriend,
-                xblName: "iiDarkGamerYT",
+                xblName: "xK1ngDark" /* "iiDarkGamerYT" */,
                 xblProfilePic: "/src/assets/facet_resources/profile_pictures/iiDarkGamerYT.png",
                 partyPresence: PlayerPartyPresence.NotInParty,
             },

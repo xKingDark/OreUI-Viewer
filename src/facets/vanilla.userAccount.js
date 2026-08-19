@@ -29,7 +29,7 @@ module.exports = () => ({
     signInPlatformNetworkTaskResult: null,
     signInPlatformNetworkTaskState: 0,
     accountUnlinkState: 0,
-    currentXuid: "2535440895442815",
+    currentXuid: "2535447190358939",
     currentPlatformId: "",
     isMarketplacePassSubscriptionActive: false,
     isRealmsPlusSubscriptionActive: true,

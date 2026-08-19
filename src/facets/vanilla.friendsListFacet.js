@@ -93,8 +93,8 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.friendsListFacet"]} */ (
             relation: PlayerRelation.TwoWayFriend,
         },
         {
-            xuid: "2535440895442815",
-            gamerTag: "iiDarkGamerYT",
+            xuid: "2535447190358939",
+            gamerTag: "xK1ngDark" /* "iiDarkGamerYT" */,
             playingOnServerId: null,
             isOnline: false,
             isCurrentlyPlaying: false,
@@ -142,4 +142,3 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.friendsListFacet"]} */ (
     xblLoadingState: 2,
     userControlledUpdateGameList() {},
 });
-

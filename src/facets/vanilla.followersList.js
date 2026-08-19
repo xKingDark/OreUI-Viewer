@@ -10,8 +10,8 @@ module.exports = () => ({
             isOnline: false,
         },
         {
-            xuid: "2535440895442815",
-            gamertag: "iiDarkGamerYT",
+            xuid: "2535447190358939",
+            gamertag: "xK1ngDark" /* "iiDarkGamerYT" */,
             description: "Creator of Ore UI Viewer.",
             isFollowingMe: true,
             isFollowedByMe: true,
