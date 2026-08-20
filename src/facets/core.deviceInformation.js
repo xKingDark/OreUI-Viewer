@@ -10,11 +10,11 @@ const getGuiScaleIndexForLargeScreen = (width, height) => {
     const heightScale = height / heightNeeded;
 
     const index = getGuiScaleIndex(Math.min(heightScale, widthScale));
-    const scale = GUI_SCALE_VALUES[index];
+    const scale = /** @type {number} */ (GUI_SCALE_VALUES[index]);
     return scale;
 };
 
-const resolveGuiScale = (index) => GUI_SCALE_VALUES[Math.min(GUI_SCALE_VALUES.length - 1, Math.max(0, index))];
+const resolveGuiScale = (index) => /** @type {number} */ (GUI_SCALE_VALUES[Math.min(GUI_SCALE_VALUES.length - 1, Math.max(0, index))]);
 const getGuiScaleIndex = (scale) => {
     let scaleIndex = 0;
     const guiScaleSize = GUI_SCALE_VALUES.length;
@@ -58,7 +58,7 @@ module.exports = () => ({
     platform: DEFAULT_PLATFORM,
     arvrPlatform: ARVRPlatform.ARVR_None,
     isLowMemoryDevice: false,
-    guiScaleModifier: -2 /* 0 */,
+    guiScaleModifier: -Math.min(2, Math.max(0, getGuiScaleIndexForLargeScreen(window.innerWidth, window.innerHeight) - 1)) /* 0 */,
     guiScaleBase: getGuiScaleIndexForLargeScreen(window.innerWidth, window.innerHeight),
     pixelsPerMillimeter: 3.779527559,
     // 96dpi,
@@ -83,4 +83,3 @@ module.exports = () => ({
     isLANAllowed: true,
     changeStorage() {},
 });
-
