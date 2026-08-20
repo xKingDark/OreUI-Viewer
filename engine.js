@@ -83,9 +83,15 @@ ipcRenderer.on("oreUIViewer:setConfig", (event, config) => {
 /**
  * The list of loaded facets.
  *
- * @type {Partial<{ [FacetType in FacetList[number]]: (...args: unknown[]) => FacetTypeMap[FacetType] }> & Record<string, (...args: unknown[]) => unknown>}
+ * @type {Partial<{ [FacetType in FacetList[number]]: { (...args: unknown[]): FacetTypeMap[FacetType]; observe?(callback: (value: FacetTypeMap[FacetType]) => Promise<void> | void): void; unobserve?(callback: (value: FacetTypeMap[FacetType]) => Promise<void> | void): void } }> & Record<string, { (...args: unknown[]): unknown; observe?(callback: (value: unknown) => Promise<void> | void): void; unobserve?(callback: (value: unknown) => Promise<void> | void): void }>}
  */
 let loadedFacets = {};
+/**
+ * A map of facets to a list of active request IDs.
+ *
+ * @type {Partial<Record<LooseAutocomplete<FacetList[number]>, string[]>>}
+ */
+let activeFacets = {};
 /**
  * Loads a facet given its ID.
  *
@@ -98,6 +104,28 @@ async function loadFacet(facet) {
 
         //console.log( "[EngineWrapper] Facet Loaded: " + facet, f );
         loadedFacets[facet] = f;
+        activeFacets[facet] = [];
+        if (loadedFacets[facet]?.observe) {
+            loadedFacets[facet].observe(function triggerFacetUpdates(value) {
+                console.warn(1923, facet, activeFacets[facet]?.length, activeFacets[facet]);
+                for (const requestId of activeFacets[facet] ?? []) {
+                    console.warn(1924, facet, requestId, engine.bindings["facet:updated:" + requestId]);
+                    engine.bindings["facet:updated:" + requestId]?.forEach((f) => {
+                        try {
+                            f?.(value);
+                        } catch (e) {
+                            console.error(
+                                `[EngineWrapper::loadFacet::${facet}::observe::triggerFacetUpdates] ERROR ON FACET UPDATED CALLBACK FOR REQUEST ID: ${requestId}`,
+                                f,
+                                value,
+                                arguments,
+                                e
+                            );
+                        }
+                    });
+                }
+            });
+        }
     } catch (e) {
         console.error(e);
     }
@@ -197,6 +225,70 @@ function resolveDDUIScreen(screen) {
  * The next ID that will be used for a query response.
  */
 let queryResponseId = 0n;
+/**
+ * @param {string} id
+ * @param {unknown[]} args
+ * @param {boolean} enableUnhandled
+ * @param {(type: "direct" | "unhandled" | "wildcard", error: unknown, f: (...args: unknown[]) => void) => Promise<false | void> | false | void} [errorCallback]
+ */
+function triggerForBindings(id, args, enableUnhandled, errorCallback) {
+    engine.bindings[id]?.forEach((f) => {
+        try {
+            f?.(...args);
+        } catch (e) {
+            if (errorCallback) {
+                const result = errorCallback("direct", e, f);
+                if (result === false) {
+                    console.error(`[EngineWrapper::triggerForBindings] ERROR ON CALLBACK FOR EVENT: ${id}`, f, args, e);
+                } else if (result) {
+                    result.then((v) => {
+                        if (v === false) console.error(`[EngineWrapper::triggerForBindings] ERROR ON CALLBACK FOR EVENT: ${id}`, f, args, e);
+                    });
+                }
+            } else {
+                console.error(`[EngineWrapper::triggerForBindings] ERROR ON CALLBACK FOR EVENT: ${id}`, f, args, e);
+            }
+        }
+    });
+    if (enableUnhandled && !engine.bindings[id]?.length) {
+        engine.bindings["_Unhandled"]?.forEach((f) => {
+            try {
+                f?.(id, ...args);
+            } catch (e) {
+                if (errorCallback) {
+                    const result = errorCallback("unhandled", e, /** @type {(...args: unknown[]) => void} */ (f));
+                    if (result === false) {
+                        console.error(`[EngineWrapper::triggerForBindings] ERROR ON UNHANDLED CALLBACK FOR EVENT: ${id}`, f, args, e);
+                    } else if (result) {
+                        result.then((v) => {
+                            if (v === false) console.error(`[EngineWrapper::triggerForBindings] ERROR ON UNHANDLED CALLBACK FOR EVENT: ${id}`, f, args, e);
+                        });
+                    }
+                } else {
+                    console.error(`[EngineWrapper::triggerForBindings] ERROR ON UNHANDLED CALLBACK FOR EVENT: ${id}`, f, args, e);
+                }
+            }
+        });
+    }
+    engine.bindings["*"]?.forEach((f) => {
+        try {
+            f?.(id, ...args);
+        } catch (e) {
+            if (errorCallback) {
+                const result = errorCallback("direct", e, /** @type {(...args: unknown[]) => void} */ (f));
+                if (result === false) {
+                    console.error(`[EngineWrapper::triggerForBindings] ERROR ON WILDCARD CALLBACK FOR EVENT: ${id}`, f, args, e);
+                } else if (result) {
+                    result.then((v) => {
+                        if (v === false) console.error(`[EngineWrapper::triggerForBindings] ERROR ON WILDCARD CALLBACK FOR EVENT: ${id}`, f, args, e);
+                    });
+                }
+            } else {
+                console.error(`[EngineWrapper::triggerForBindings] ERROR ON WILDCARD CALLBACK FOR EVENT: ${id}`, f, args, e);
+            }
+        }
+    });
+}
 var engine = /** @satisfies {Engine} */ ({
     facets: loadedFacets,
     /**
@@ -596,6 +688,7 @@ var engine = /** @satisfies {Engine} */ ({
         }
     },
     RemoveOnHandler: (id, func, _) => console.log(`[EngineWrapper::RemoveOnHandler] RemoveOnHandler for ID ${id}. func: ${func}`),
+    // TODO: Implement query:updated (it should trigger when the value of a query updates).
     trigger: /** @template {EngineEventID} T @param {T} id @param {EngineEvent<EngineEventID extends T ? undefined : T>} args */ (id, ...args) => {
         /**
          * @type any
@@ -605,24 +698,106 @@ var engine = /** @satisfies {Engine} */ ({
             if (!engine.WindowLoaded) continue;
             switch (id) {
                 case "facet:request": {
-                    const [query, requestId, parameters] = args;
-                    if (engine.facets.hasOwnProperty(query)) {
-                        console.log(`[EngineWrapper::trigger] Sending Facet: ${query}`, args);
+                    const [facetName, requestId, parameters] = args;
+                    if (engine.facets.hasOwnProperty(facetName)) {
+                        console.log(`[EngineWrapper::trigger/facet:request] Sending Facet: ${facetName}`, args);
+                        if (!activeFacets[facetName]?.includes(requestId ?? facetName)) (activeFacets[facetName] ??= []).push(requestId ?? facetName);
                         if (requestId !== undefined) {
-                            console.log(id, query, requestId, parameters);
-                            engine.bindings["facet:updated:" + requestId]?.forEach((f) =>
-                                f?.(
-                                    typeof engine.facets[query] === "function" ?
-                                        engine.facets[query](parameters)
-                                    :   (console.log("NOT A FUNCTION", query, engine.facets[query]), engine.facets[query])
-                                )
-                            );
-                        } else engine.bindings["facet:updated:" + query]?.forEach((f) => f?.(engine.facets[query]));
+                            console.log(id, facetName, requestId, parameters);
+                            let facetData;
+                            try {
+                                facetData =
+                                    typeof engine.facets[facetName] === "function" ?
+                                        engine.facets[facetName](parameters)
+                                    :   (console.log("NOT A FUNCTION", facetName, engine.facets[facetName]), engine.facets[facetName]);
+                            } catch (e) {
+                                console.error(`[EngineWrapper::trigger/facet:request] ERROR INITIALIZING FACET: ${facetName}`, args, e);
+                                triggerForBindings("facet:error:" + requestId, ["facet-initialization-failed"], true, (type, e, f) => {
+                                    if (type !== "direct") return false;
+                                    console.error(
+                                        `[EngineWrapper::trigger/facet:request] ERROR ON FACET ERROR CALLBACK FOR FACET: ${facetName}`,
+                                        f,
+                                        "facet-initialization-failed",
+                                        args,
+                                        e
+                                    );
+                                });
+                                throw e;
+                            }
+                            triggerForBindings("facet:updated:" + requestId, [facetData], true, (type, e, f) => {
+                                if (type !== "direct") return false;
+                                console.error(
+                                    `[EngineWrapper::trigger/facet:request] ERROR ON FACET UPDATED CALLBACK FOR FACET: ${facetName}`,
+                                    f,
+                                    facetData,
+                                    args,
+                                    e
+                                );
+                            });
+                        } else {
+                            let facetData;
+                            try {
+                                facetData =
+                                    typeof engine.facets[facetName] === "function" ?
+                                        engine.facets[facetName](parameters)
+                                    :   (console.log("NOT A FUNCTION", facetName, engine.facets[facetName]), engine.facets[facetName]);
+                            } catch (e) {
+                                console.error(`[EngineWrapper::trigger/facet:request] ERROR INITIALIZING FACET: ${facetName}`, args, e);
+                                triggerForBindings("facet:error:" + facetName, ["facet-initialization-failed"], true, (type, e, f) => {
+                                    if (type !== "direct") return false;
+                                    console.error(
+                                        `[EngineWrapper::trigger/facet:request] ERROR ON FACET ERROR CALLBACK FOR FACET: ${facetName}`,
+                                        f,
+                                        "facet-initialization-failed",
+                                        args,
+                                        e
+                                    );
+                                });
+                                throw e;
+                            }
+                            triggerForBindings("facet:updated:" + facetName, [facetData], true, (type, e, f) => {
+                                if (type !== "direct") return false;
+                                console.error(
+                                    `[EngineWrapper::trigger/facet:request] ERROR ON FACET UPDATED CALLBACK FOR FACET: ${facetName}`,
+                                    f,
+                                    facetData,
+                                    args,
+                                    e
+                                );
+                            });
+                        }
                     } else {
-                        console.error(`[EngineWrapper::trigger] MISSING FACET: ${query}`);
-                        try {
-                            engine.bindings["facet:error:" + (requestId ?? query)]?.forEach((f) => f?.(engine.facets[query]));
-                        } catch {}
+                        console.error(`[EngineWrapper::trigger/facet:request] MISSING FACET: ${facetName}`);
+                        triggerForBindings("facet:error:" + (requestId ?? facetName), ["activate-facet-not-found"], true, (type, e, f) => {
+                            if (type !== "direct") return false;
+                            console.error(
+                                `[EngineWrapper::trigger/facet:request] ERROR ON FACET ERROR CALLBACK FOR FACET: ${facetName}`,
+                                f,
+                                "activate-facet-not-found",
+                                args,
+                                e
+                            );
+                        });
+                    }
+                    break;
+                }
+                case "facet:discard": {
+                    const [facetName] = args;
+                    if (engine.facets.hasOwnProperty(facetName)) {
+                        console.log(`[EngineWrapper::trigger/facet:discard] Discarding Facet: ${facetName}`, args);
+                        if (activeFacets[facetName]?.includes(facetName)) activeFacets[facetName].splice(activeFacets[facetName].indexOf(facetName), 1);
+                    } else {
+                        console.error(`[EngineWrapper::trigger/facet:discard] MISSING FACET: ${facetName}`);
+                        triggerForBindings("facet:error:" + facetName, ["deactivate-facet-not-found"], true, (type, e, f) => {
+                            if (type !== "direct") return false;
+                            console.error(
+                                `[EngineWrapper::trigger/facet:discard] ERROR ON FACET ERROR CALLBACK FOR FACET: ${facetName}`,
+                                f,
+                                "deactivate-facet-not-found",
+                                args,
+                                e
+                            );
+                        });
                     }
                     break;
                 }
@@ -645,10 +820,12 @@ var engine = /** @satisfies {Engine} */ ({
                         }
                     } else {
                         console.warn(`[EngineWrapper::trigger] OreUI triggered ${id} but we don't handle it!`, "Args:", ...args);
+                        triggerForBindings(id, args, true);
+                        return;
                     }
                     break;
             }
-            engine.bindings[id]?.forEach((f) => typeof f === "function" && f(...args));
+            triggerForBindings(id, args, false);
 
             return;
         }
@@ -664,24 +841,106 @@ var engine = /** @satisfies {Engine} */ ({
                 if (!engine.WindowLoaded) continue;
                 switch (id) {
                     case "facet:request": {
-                        const [query, requestId, parameters] = args;
-                        if (engine.facets.hasOwnProperty(query)) {
-                            console.log(`[EngineWrapper::TriggerEvent::apply] Sending Facet: ${query}`, args);
+                        const [facetName, requestId, parameters] = args;
+                        if (engine.facets.hasOwnProperty(facetName)) {
+                            console.log(`[EngineWrapper::TriggerEvent::apply/facet:request] Sending Facet: ${facetName}`, args);
+                            if (!activeFacets[facetName]?.includes(requestId ?? facetName)) (activeFacets[facetName] ??= []).push(requestId ?? facetName);
                             if (requestId !== undefined) {
-                                console.log(id, query, requestId, parameters);
-                                engine.bindings["facet:updated:" + requestId]?.forEach((f) =>
-                                    f?.(
-                                        typeof engine.facets[query] === "function" ?
-                                            engine.facets[query](parameters)
-                                        :   (console.log("NOT A FUNCTION", query, engine.facets[query]), engine.facets[query])
-                                    )
-                                );
-                            } else engine.bindings["facet:updated:" + query]?.forEach((f) => f?.(engine.facets[query]));
+                                console.log(id, facetName, requestId, parameters);
+                                let facetData;
+                                try {
+                                    facetData =
+                                        typeof engine.facets[facetName] === "function" ?
+                                            engine.facets[facetName](parameters)
+                                        :   (console.log("NOT A FUNCTION", facetName, engine.facets[facetName]), engine.facets[facetName]);
+                                } catch (e) {
+                                    console.error(`[EngineWrapper::TriggerEvent::apply/facet:request] ERROR INITIALIZING FACET: ${facetName}`, args, e);
+                                    triggerForBindings("facet:error:" + requestId, ["facet-initialization-failed"], true, (type, e, f) => {
+                                        if (type !== "direct") return false;
+                                        console.error(
+                                            `[EngineWrapper::TriggerEvent::apply/facet:request] ERROR ON FACET ERROR CALLBACK FOR FACET: ${facetName}`,
+                                            f,
+                                            "facet-initialization-failed",
+                                            args,
+                                            e
+                                        );
+                                    });
+                                    throw e;
+                                }
+                                triggerForBindings("facet:updated:" + requestId, [facetData], true, (type, e, f) => {
+                                    if (type !== "direct") return false;
+                                    console.error(
+                                        `[EngineWrapper::TriggerEvent::apply/facet:request] ERROR ON FACET UPDATED CALLBACK FOR FACET: ${facetName}`,
+                                        f,
+                                        facetData,
+                                        args,
+                                        e
+                                    );
+                                });
+                            } else {
+                                let facetData;
+                                try {
+                                    facetData =
+                                        typeof engine.facets[facetName] === "function" ?
+                                            engine.facets[facetName](parameters)
+                                        :   (console.log("NOT A FUNCTION", facetName, engine.facets[facetName]), engine.facets[facetName]);
+                                } catch (e) {
+                                    console.error(`[EngineWrapper::TriggerEvent::apply/facet:request] ERROR INITIALIZING FACET: ${facetName}`, args, e);
+                                    triggerForBindings("facet:error:" + facetName, ["facet-initialization-failed"], true, (type, e, f) => {
+                                        if (type !== "direct") return false;
+                                        console.error(
+                                            `[EngineWrapper::TriggerEvent::apply/facet:request] ERROR ON FACET ERROR CALLBACK FOR FACET: ${facetName}`,
+                                            f,
+                                            "facet-initialization-failed",
+                                            args,
+                                            e
+                                        );
+                                    });
+                                    throw e;
+                                }
+                                triggerForBindings("facet:updated:" + facetName, [facetData], true, (type, e, f) => {
+                                    if (type !== "direct") return false;
+                                    console.error(
+                                        `[EngineWrapper::TriggerEvent::apply/facet:request] ERROR ON FACET UPDATED CALLBACK FOR FACET: ${facetName}`,
+                                        f,
+                                        facetData,
+                                        args,
+                                        e
+                                    );
+                                });
+                            }
                         } else {
-                            console.error(`[EngineWrapper::TriggerEvent::apply] MISSING FACET: ${query}`);
-                            try {
-                                engine.bindings["facet:error:" + (requestId ?? query)]?.forEach((f) => f?.(engine.facets[query]));
-                            } catch {}
+                            console.error(`[EngineWrapper::TriggerEvent::apply/facet:request] MISSING FACET: ${facetName}`);
+                            triggerForBindings("facet:error:" + (requestId ?? facetName), ["activate-facet-not-found"], true, (type, e, f) => {
+                                if (type !== "direct") return false;
+                                console.error(
+                                    `[EngineWrapper::TriggerEvent::apply/facet:request] ERROR ON FACET ERROR CALLBACK FOR FACET: ${facetName}`,
+                                    f,
+                                    "activate-facet-not-found",
+                                    args,
+                                    e
+                                );
+                            });
+                        }
+                        break;
+                    }
+                    case "facet:discard": {
+                        const [facetName] = args;
+                        if (engine.facets.hasOwnProperty(facetName)) {
+                            console.log(`[EngineWrapper::TriggerEvent::apply/facet:discard] Discarding Facet: ${facetName}`, args);
+                            if (activeFacets[facetName]?.includes(facetName)) activeFacets[facetName].splice(activeFacets[facetName].indexOf(facetName), 1);
+                        } else {
+                            console.error(`[EngineWrapper::TriggerEvent::apply/facet:discard] MISSING FACET: ${facetName}`);
+                            triggerForBindings("facet:error:" + facetName, ["deactivate-facet-not-found"], true, (type, e, f) => {
+                                if (type !== "direct") return false;
+                                console.error(
+                                    `[EngineWrapper::TriggerEvent::apply/facet:discard] ERROR ON FACET ERROR CALLBACK FOR FACET: ${facetName}`,
+                                    f,
+                                    "deactivate-facet-not-found",
+                                    args,
+                                    e
+                                );
+                            });
                         }
                         break;
                     }
@@ -704,10 +963,12 @@ var engine = /** @satisfies {Engine} */ ({
                             }
                         } else {
                             console.warn(`[EngineWrapper::TriggerEvent::apply] OreUI triggered ${id} but we don't handle it!`, "Args:", ...args);
+                            triggerForBindings(id, args, true);
+                            return;
                         }
                         break;
                 }
-                engine.bindings[id]?.forEach((f) => typeof f === "function" && f(...args));
+                triggerForBindings(id, args, false);
 
                 return;
             }

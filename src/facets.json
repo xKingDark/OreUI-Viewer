@@ -81,6 +81,8 @@
     "vanilla.realmsStories.persistentData",
     "vanilla.realmsStories.players",
     "vanilla.realmsStories.realmData",
+    "vanilla.realmsStories.reports",
+    "vanilla.realmsStories.reportCommands",
     "vanilla.realmsStories.settings",
     "vanilla.realmsStories.stories",
     "vanilla.RealmsPDPFacet",

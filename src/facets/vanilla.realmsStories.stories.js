@@ -1,4 +1,5 @@
-module.exports = () => ({
+// @ts-check
+module.exports = /** @type {() => FacetTypeMap["vanilla.realmsStories.stories"]} */ () => ({
     mostRecentStoriesViewed: true,
     pageLength: 10,
     unreadStoryCount: 0,

@@ -1,9 +1,11 @@
-module.exports = () => ({
+// @ts-check
+module.exports = /** @type {() => FacetTypeMap["vanilla.externalServerWorldList"]} */ () => ({
     externalServerWorlds: [
         {
-            id: "external-id1",
+            id: "1" /* "external-id1" */,
             name: "Test External Server",
-            ping: 0,
+            // @ts-expect-error
+            ping: 500,
             capacity: 5000,
             playerCount: 1,
             msgOfTheDay: "The best server ever!",
