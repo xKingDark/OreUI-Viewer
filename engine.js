@@ -357,6 +357,16 @@ var engine = /** @satisfies {Engine} */ ({
                 isStorageLow: false,
             };
         },
+        "core.commandState"(commandID) {
+            // TODO
+            return {
+                __Type: `core.commandState$_$${queryResponseId++}`,
+                error: null,
+                progress: 0,
+                result: 0,
+                state: 0,
+            };
+        },
         "core.staticFeatureFlag"(featureFlagID) {
             if (!loadedFacets["core.featureFlags"]) throw new Error("Missing facet: core.featureFlags");
             const featureFlagsFacet = loadedFacets["core.featureFlags"]({});
