@@ -1,7 +1,9 @@
 // @ts-check
+const { FacetTaskState } = require("@ore-ui-types/enums");
+
 module.exports = /** @type {() => UnionToIntersection<FacetTypeMap["vanilla.thirdPartyWorldList"]>} */ () => ({
-    fetchThirdPartyWorldsTaskState: 2,
-    thirdPartyServersStatus: 0,
+    fetchThirdPartyWorldsTaskState: FacetTaskState.DONE,
+    thirdPartyServersStatus: 0 /* ThirdPartyServersStatus */ /* TODO: Switch this to the enum when the module update containing it is released. */,
     thirdPartyWorlds: [
         {
             id: "3b73ca98-1652-42b6-a89b-2a4ba52be7e3",
