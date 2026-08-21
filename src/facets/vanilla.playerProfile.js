@@ -1,5 +1,5 @@
 // @ts-check
-const { FriendFavoriteStatus, FriendPresence, PlayerRelation, PlayerPartyPresence } = require("@ore-ui-types/enums");
+const { FavoriteStatusEnum, SocialPresence, PlayerRelation, PartyPresence } = require("@ore-ui-types/enums");
 
 module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () => ({
     playerProfiles: [
@@ -22,7 +22,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 playingOnServerId: "12345",
                 url: "data:text/plain,Ah%2C%20another%20sentient%20test%2C%20eh%3F%20Come%20here%20and%20let%20me%20erase%20you!",
                 avatarState: 0,
-                favoriteStatus: FriendFavoriteStatus.UNKNOWN,
+                favoriteStatus: FavoriteStatusEnum.UNKNOWN,
                 isInSameGame: false,
                 offlineName: "testtesttesttest",
                 platformId: "",
@@ -30,11 +30,11 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 titleId: undefined,
                 titleName: "",
                 platformProfilePic: "",
-                presence: FriendPresence.Offline,
+                presence: SocialPresence.Offline,
                 presenceMessage: "Playing in Test Mode",
                 xblName: "Test",
                 xblProfilePic: "/src/assets/mcpreview.png",
-                partyPresence: PlayerPartyPresence.NotInParty,
+                partyPresence: PartyPresence.NotInParty,
             },
         },
         {
@@ -50,13 +50,13 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 // @ts-ignore
                 playingOnServerId: undefined,
                 titleHistory: 2,
-                favoriteStatus: FriendFavoriteStatus.NOT_FAVORITE,
+                favoriteStatus: FavoriteStatusEnum.NOT_FAVORITE,
                 presenceMessage: "Playing in Survival Mode",
                 isInSameGame: false,
                 // @ts-ignore
                 titleId: 0,
                 titleName: "Minecraft",
-                presence: FriendPresence.Online,
+                presence: SocialPresence.Online,
                 platformId: "",
                 avatar: "",
                 avatarState: 0,
@@ -71,7 +71,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 relation: PlayerRelation.TwoWayFriend,
                 xblName: "Random User",
                 xblProfilePic: "/src/assets/placeholder_gamertag.png",
-                partyPresence: PlayerPartyPresence.NotInParty,
+                partyPresence: PartyPresence.NotInParty,
             },
         },
         {
@@ -86,13 +86,13 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 isCurrentlyPlaying: true,
                 playingOnServerId: "test",
                 titleHistory: 2,
-                favoriteStatus: FriendFavoriteStatus.FAVORITE,
+                favoriteStatus: FavoriteStatusEnum.FAVORITE,
                 presenceMessage: "Playing in Creative Mode",
                 isInSameGame: false,
                 // @ts-ignore
                 titleId: 0,
                 titleName: "Minecraft",
-                presence: FriendPresence.Away,
+                presence: SocialPresence.Away,
                 platformId: "",
                 avatar: "",
                 avatarState: 0,
@@ -107,7 +107,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 relation: PlayerRelation.TwoWayFriend,
                 xblName: "MrDirt",
                 xblProfilePic: "/src/assets/mcpreview.png",
-                partyPresence: PlayerPartyPresence.NotInParty,
+                partyPresence: PartyPresence.NotInParty,
             },
         },
         {
@@ -123,13 +123,13 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 // @ts-ignore
                 playingOnServerId: undefined,
                 titleHistory: 2,
-                favoriteStatus: FriendFavoriteStatus.NOT_FAVORITE,
+                favoriteStatus: FavoriteStatusEnum.NOT_FAVORITE,
                 presenceMessage: "Playing in Survival Mode",
                 isInSameGame: true,
                 // @ts-ignore
                 titleId: 0,
                 titleName: "Minecraft",
-                presence: FriendPresence.Online,
+                presence: SocialPresence.Online,
                 platformId: "",
                 avatar: "",
                 avatarState: 0,
@@ -144,7 +144,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 relation: PlayerRelation.TwoWayFriend,
                 xblName: "Steve",
                 xblProfilePic: "/src/assets/placeholder_gamertag.png",
-                partyPresence: PlayerPartyPresence.NotInParty,
+                partyPresence: PartyPresence.NotInParty,
             },
         },
         {
@@ -160,13 +160,13 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 // @ts-ignore
                 playingOnServerId: undefined,
                 titleHistory: 2,
-                favoriteStatus: FriendFavoriteStatus.NOT_FAVORITE,
+                favoriteStatus: FavoriteStatusEnum.NOT_FAVORITE,
                 presenceMessage: "Watching You",
                 isInSameGame: false,
                 // @ts-ignore
                 titleId: 0,
                 titleName: "Minecraft",
-                presence: FriendPresence.Online,
+                presence: SocialPresence.Online,
                 platformId: "",
                 avatar: "",
                 avatarState: 0,
@@ -181,7 +181,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 relation: PlayerRelation.TwoWayFriend,
                 xblName: "Herobrine",
                 xblProfilePic: "/src/assets/facet_resources/profile_pictures/Herobrine.png",
-                partyPresence: PlayerPartyPresence.NotInParty,
+                partyPresence: PartyPresence.NotInParty,
             },
         },
         {
@@ -197,13 +197,13 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 isCurrentlyPlaying: false,
                 gamerIcon: "/src/assets/facet_resources/profile_pictures/iiDarkGamerYT.png",
                 titleHistory: 2,
-                favoriteStatus: FriendFavoriteStatus.FAVORITE,
+                favoriteStatus: FavoriteStatusEnum.FAVORITE,
                 presenceMessage: "",
                 isInSameGame: false,
                 // @ts-ignore
                 titleId: 0,
                 titleName: "",
-                presence: FriendPresence.Offline,
+                presence: SocialPresence.Offline,
                 platformId: "",
                 avatar: "",
                 avatarState: 0,
@@ -218,7 +218,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 relation: PlayerRelation.TwoWayFriend,
                 xblName: "xK1ngDark" /* "iiDarkGamerYT" */,
                 xblProfilePic: "/src/assets/facet_resources/profile_pictures/iiDarkGamerYT.png",
-                partyPresence: PlayerPartyPresence.NotInParty,
+                partyPresence: PartyPresence.NotInParty,
             },
         },
         {
@@ -234,13 +234,13 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 isCurrentlyPlaying: true,
                 gamerIcon: "/src/assets/facet_resources/profile_pictures/8Crafter.gif",
                 titleHistory: 2,
-                favoriteStatus: FriendFavoriteStatus.FAVORITE,
+                favoriteStatus: FavoriteStatusEnum.FAVORITE,
                 presenceMessage: "In the Minecraft Menus",
                 isInSameGame: false,
                 // @ts-ignore
                 titleId: 0,
                 titleName: "Minecraft",
-                presence: FriendPresence.Online,
+                presence: SocialPresence.Online,
                 platformId: "",
                 avatar: "",
                 avatarState: 0,
@@ -255,7 +255,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 relation: PlayerRelation.TwoWayFriend,
                 xblName: "Andexter8",
                 xblProfilePic: "/src/assets/facet_resources/profile_pictures/8Crafter.gif",
-                partyPresence: PlayerPartyPresence.NotInParty,
+                partyPresence: PartyPresence.NotInParty,
             },
         },
     ],
