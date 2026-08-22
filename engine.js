@@ -4,7 +4,9 @@
 /**
  * @import {} from "ore-ui-types";
  */
-require("v8-compile-cache");
+try {
+    require("v8-compile-cache");
+} catch {}
 const fs = require("fs");
 const path = require("path");
 const { Cubemap } = require("./libs/@hatchibombotar-cubemap");
