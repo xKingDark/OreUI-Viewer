@@ -109,9 +109,9 @@ async function loadFacet(facet) {
         activeFacets[facet] = [];
         if (loadedFacets[facet]?.observe) {
             loadedFacets[facet].observe(function triggerFacetUpdates(value) {
-                console.warn(1923, facet, activeFacets[facet]?.length, activeFacets[facet]);
+                // console.warn(1923, facet, activeFacets[facet]?.length, activeFacets[facet]); // DEBUG
                 for (const requestId of activeFacets[facet] ?? []) {
-                    console.warn(1924, facet, requestId, engine.bindings["facet:updated:" + requestId]);
+                    // console.warn(1924, facet, requestId, engine.bindings["facet:updated:" + requestId]); // DEBUG
                     engine.bindings["facet:updated:" + requestId]?.forEach((f) => {
                         try {
                             f?.(value);
@@ -367,6 +367,14 @@ var engine = /** @satisfies {Engine} */ ({
                 progress: 0,
                 result: 0,
                 state: 0,
+            };
+        },
+        "core.featureFlag"(featureFlagID) {
+            if (!loadedFacets["core.featureFlags"]) throw new Error("Missing facet: core.featureFlags");
+            const featureFlagsFacet = loadedFacets["core.featureFlags"]({});
+            return {
+                __Type: `core.featureFlag$_$${queryResponseId++}`,
+                enabled: featureFlagsFacet.flags.includes(featureFlagID),
             };
         },
         "core.staticFeatureFlag"(featureFlagID) {

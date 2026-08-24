@@ -1,6 +1,8 @@
 // @ts-check
 const { FavoriteStatusEnum, SocialPresence, PlayerRelation, PartyPresence } = require("@ore-ui-types/enums");
 
+// TODO: Add 1.21.71 support for this.
+
 module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () => ({
     playerProfiles: [
         {
