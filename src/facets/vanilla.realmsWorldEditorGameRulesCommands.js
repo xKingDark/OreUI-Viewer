@@ -1,0 +1,26 @@
+// @ts-check
+module.exports = /** @type {() => FacetTypeMap["vanilla.realmsWorldEditorGameRulesCommands"]} */ () => ({
+    // TODO: Make this able to set the values in vanilla.realmsWorldEditorGameRulesQueries.
+    setShowCoordinates(...args) {},
+    setShowDaysPlayed(...args) {},
+    setRecipesUnlock(...args) {},
+    setFireSpreads(...args) {},
+    setTNTExplodes(...args) {},
+    setRespawnBlocksExplode(...args) {},
+    setMobsDropLoot(...args) {},
+    setNaturalRegeneration(...args) {},
+    setTileDrops(...args) {},
+    setSleepSkipNight(...args) {},
+    setSleepSkipNightPercent(...args) {},
+    setImmediateRespawn(...args) {},
+    setRespawnRadius(...args) {},
+    setRandomTickSpeed(...args) {},
+    setKeepInventory(...args) {},
+    setMobSpawn(...args) {},
+    setMobGriefing(...args) {},
+    setEntityDrop(...args) {},
+    setWeatherCycle(...args) {},
+    setCommandBlocksEnabled(...args) {},
+    setFriendlyFireEnabled(...args) {},
+    setPlayerWaypointsMode(...args) {},
+});

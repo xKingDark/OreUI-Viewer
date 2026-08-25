@@ -1,0 +1,26 @@
+// @ts-check
+module.exports = /** @type {() => FacetTypeMap["vanilla.realmsWorldEditorGameRulesQueries"]} */ () => ({
+    // TODO: Make these values persist until they are unloaded.
+    playerWaypointsMode: 1,
+    friendlyFireEnabled: false,
+    commandBlocks: true,
+    entitiesDropLoot: true,
+    weatherCycle: false,
+    mobGriefing: false,
+    mobSpawn: false,
+    keepInventory: true,
+    randomTickSpeed: 1,
+    respawnRadius: 0,
+    immediateRespawn: true,
+    sleepSkipNightPercent: 100,
+    sleepSkipNight: true,
+    tileDrops: true,
+    naturalRegeneration: true,
+    mobLoot: true,
+    respawnBlocksExplode: false,
+    tntExplodes: false,
+    fireSpreads: false,
+    recipesUnlock: false,
+    showDaysPlayed: false,
+    showCoordinates: true,
+});
