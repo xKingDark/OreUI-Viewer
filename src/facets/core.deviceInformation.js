@@ -58,7 +58,7 @@ module.exports = () => ({
     platform: DEFAULT_PLATFORM,
     arvrPlatform: ARVRPlatform.ARVR_None,
     isLowMemoryDevice: false,
-    guiScaleModifier: -Math.min(2, Math.max(0, getGuiScaleIndexForLargeScreen(window.innerWidth, window.innerHeight) - 1)) /* 0 */,
+    guiScaleModifier: -Math.min(2, Math.max(0, getGuiScaleIndexForLargeScreen(window.innerWidth, window.innerHeight) - 2)) /* 0 */,
     guiScaleBase: getGuiScaleIndexForLargeScreen(window.innerWidth, window.innerHeight),
     pixelsPerMillimeter: 3.779527559,
     // 96dpi,
