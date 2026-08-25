@@ -1,4 +1,5 @@
-module.exports = () => ({
+// @ts-check
+module.exports = /** @type {() => FacetTypeMap["vanilla.options"]} */ () => ({
     playVideoInTouchControlSelectionScreen: true,
     useMobileDataOnce: false,
     showTouchControlSelectionScreen: false,
