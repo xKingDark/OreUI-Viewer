@@ -109,21 +109,17 @@ async function loadFacet(facet) {
         activeFacets[facet] = [];
         if (loadedFacets[facet]?.observe) {
             loadedFacets[facet].observe(function triggerFacetUpdates(value) {
-                // console.warn(1923, facet, activeFacets[facet]?.length, activeFacets[facet]); // DEBUG
+                // console.warn(1923, facet, activeFacets[facet]?.length, activeFacets[facet], value); // DEBUG
                 for (const requestId of activeFacets[facet] ?? []) {
-                    // console.warn(1924, facet, requestId, engine.bindings["facet:updated:" + requestId]); // DEBUG
-                    engine.bindings["facet:updated:" + requestId]?.forEach((f) => {
-                        try {
-                            f?.(value);
-                        } catch (e) {
-                            console.error(
-                                `[EngineWrapper::loadFacet::${facet}::observe::triggerFacetUpdates] ERROR ON FACET UPDATED CALLBACK FOR REQUEST ID: ${requestId}`,
-                                f,
-                                value,
-                                arguments,
-                                e
-                            );
-                        }
+                    // console.warn(1924, facet, requestId, engine.bindings["facet:updated:" + requestId], value); // DEBUG
+                    triggerForBindings("facet:updated:" + requestId, [value], true, (type, e, f) => {
+                        console.error(
+                            `[EngineWrapper::loadFacet::${facet}::observe::triggerFacetUpdates] ERROR ON FACET UPDATED CALLBACK FOR REQUEST ID: ${requestId}`,
+                            f,
+                            value,
+                            arguments,
+                            e
+                        );
                     });
                 }
             });
@@ -683,6 +679,68 @@ var engine = /** @satisfies {Engine} */ ({
                     isEditorWorld: false,
                     cloudSyncState: null,
                 }),
+            };
+        },
+        "vanilla.realms.currentRealm"(_xuid) {
+            // TODO
+            // TEMP
+            return {
+                __Type: `vanilla.realms.currentRealm$_$${queryResponseId++}`,
+                realmID: null,
+                isRealmOwner: false,
+            };
+        },
+        "vanilla.menus.realms.adminLogQuery"() {
+            return {
+                __Type: `vanilla.menus.realms.adminLogQuery$_$${queryResponseId++}`,
+                logs: [], // TODO // TEMP
+            };
+        },
+        "vanilla.menus.realms.realmsBackupDownloadQuery"() {
+            return {
+                __Type: `vanilla.menus.realms.realmsBackupDownloadQuery$_$${queryResponseId++}`,
+                state: 0,
+                progress: 0,
+            };
+        },
+        "vanilla.menus.realms.realmsSavesQuery"() {
+            // TODO
+            // TEMP
+            return {
+                __Type: `vanilla.menus.realms.realmsSavesQuery$_$${queryResponseId++}`,
+                manualBackups: [],
+                automaticBackups: [],
+                storageBytesUsed: 0,
+                storageBytesTotal: 0,
+                activeWorldSizeBytes: 0,
+            };
+        },
+        realmsServerSettingsQuery() {
+            return {
+                __Type: `realmsServerSettingsQuery$_$${queryResponseId++}`,
+                playerCount: {
+                    __Type: `playerCount$_$${queryResponseId++}`,
+                    min: 10,
+                    max: 10,
+                    defaultValue: 10,
+                    current: 10,
+                },
+                renderDistance: {
+                    __Type: `renderDistance$_$${queryResponseId++}`,
+                    min: 4,
+                    max: 25,
+                    defaultValue: 25,
+                    current: 20,
+                },
+                simDistance: {
+                    __Type: `simDistance$_$${queryResponseId++}`,
+                    min: 4,
+                    max: 4,
+                    defaultValue: 4,
+                    current: 4,
+                },
+                realmsServerMode: 0,
+                tier: 1,
             };
         },
     },
