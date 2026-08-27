@@ -18,14 +18,14 @@
 	"dependencies": {
 		"@electron/remote": "^2.0.10",
 		"@hatchibombotar/cubemap": "^1.0.6",
-		"@ore-ui-types/enums": "^1.7.0",
+		"@ore-ui-types/enums": "^1.8.0",
 		"electron": "^41.2.0",
 		"express": "^4.22.1",
 		"json5": "^2.2.3",
 		"v8-compile-cache": "^2.4.0"
 	},
 	"devDependencies": {
-		"ore-ui-types": "^1.6.0",
+		"ore-ui-types": "^1.7.0",
 		"prettier-plugin-markdown-list-tabwidth": "^1.2.0",
 		"type-fest": "^5.8.0"
 	}
