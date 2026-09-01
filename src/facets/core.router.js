@@ -6,8 +6,8 @@ const url = new URL(__internal_Config__.pathname, "http://localhost/");
 let list = JSON.parse(sessionStorage.getItem("__internal_OreUIViewer_lastRouterList__") ?? "null") ?? [
     {
         pathname: url.pathname,
-        hash: url.hash,
-        search: url.search,
+        hash: url.hash.slice(1),
+        search: url.search.slice(1),
         state: "",
     },
 ];
@@ -81,11 +81,11 @@ module.exports = () => ({
 
         replace(path, action) {
             const url = new URL(path, "http://localhost/");
-            if (list[index].pathname === url.pathname && list[index].search === url.search && list[index].hash === url.hash) return;
+            if (list[index].pathname === url.pathname && list[index].search === url.search.slice(1) && list[index].hash === url.hash.slice(1)) return;
 
             lastAction = action ?? "REPLACE";
             list.splice(index + 1 - (lastAction === "REPLACE"), Infinity); //_ Remove all entries after the current index
-            list.push({ pathname: url.pathname, hash: url.hash, search: url.search, state: "" });
+            list.push({ pathname: url.pathname, hash: url.hash.slice(1), search: url.search.slice(1), state: "" });
             index = list.length - 1;
             location = list[index];
             listB = [...list];
