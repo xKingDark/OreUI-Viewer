@@ -6,6 +6,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.partyCommands"]} */ () =
         loading: false,
         clearError(...args) {
             console.log("[EngineWrapper/PartyCommandsFacet] acceptInviteState.clearError()", args);
+            return null;
         },
     },
     joinPartyState: {
@@ -14,6 +15,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.partyCommands"]} */ () =
         loading: false,
         clearError(...args) {
             console.log("[EngineWrapper/PartyCommandsFacet] joinPartyState.clearError()", args);
+            return null;
         },
     },
     createPartyState: {
@@ -22,6 +24,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.partyCommands"]} */ () =
         loading: false,
         clearError(...args) {
             console.log("[EngineWrapper/PartyCommandsFacet] createPartyState.clearError()", args);
+            return null;
         },
     },
     sendInvite(...args) {

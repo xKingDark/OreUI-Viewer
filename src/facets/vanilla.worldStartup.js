@@ -15,6 +15,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.worldStartup"]} */ () =>
     startLocalWorld: Object.assign(
         function startLocalWorld(/** @type {unknown} */ worldId) {
             console.log(`[EngineWrapper/VanillaWorldStartupFacet] startLocalWorld(): Starting local world with id: ${worldId}`);
+            return null;
         },
         {
             result: 0,
@@ -40,5 +41,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.worldStartup"]} */ () =>
     hasConfirmedPlatformLockedContentForWorld(worldId) {
         return platformLockedWorlds[worldId] ?? false;
     },
-    clearStartLocalWorldResult() {},
+    clearStartLocalWorldResult() {
+        return null;
+    },
 });
