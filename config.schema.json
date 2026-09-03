@@ -41,16 +41,22 @@
             "default": "copper-age",
             "enum": [
                 "beta",
+                "better-together",
                 "buzzy-bees",
+                "chaos-cubed",
                 "chase-the-skies",
                 "copper-age",
                 "creeking",
                 "education-demo",
                 "mounts-of-mayhem",
+                "nether-update",
                 "preview",
                 "spring-to-life",
+                "tiny-takeover",
                 "trails-and-tales",
                 "tricky-trials",
+                "update-aquatic",
+                "village-and-pillage",
                 "wild-update",
                 "windows-10-edition-beta"
             ]
