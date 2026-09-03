@@ -1,7 +1,9 @@
-module.exports = () => ({
+// @ts-check
+module.exports = /** @type {() => FacetTypeMap["vanilla.playerPrivacy"]} */ () => ({
     loaded: true,
     data: { viewTargetProfile: true },
-    load() {
-        console.log("Player privacy data loaded");
+    load(xuid) {
+        console.log("Player privacy data loaded", arguments);
+        return null;
     },
 });

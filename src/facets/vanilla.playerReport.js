@@ -1,5 +1,5 @@
 // @ts-check
-module.exports = () => ({
+module.exports = /** @type {() => FacetTypeMap["vanilla.playerReport"] & Record<"reportPlayer" | "uuid", unknown>} */ () => ({
     reportPlayer: () => console.log("[EngineWrapper/PlayerReportFacet] reportPlayer()"),
     isChatAvailable: () => true,
     decideReportReasonOptions: () => {},
@@ -51,4 +51,3 @@ module.exports = () => ({
     finishReport() {},
     startReport() {},
 });
-

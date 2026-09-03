@@ -1,4 +1,7 @@
-module.exports = () => ({
+// @ts-check
+const { PlayerMessagingServiceFacetStatus } = require("@ore-ui-types/enums");
+
+module.exports = /** @type {() => FacetTypeMap["vanilla.playermessagingservice"]} */ () => ({
     data: {
         messageCount: 4,
         messages: [
@@ -10,11 +13,20 @@ module.exports = () => ({
                     { key: "header", value: "Test" },
                     { key: "body", value: "Hello World!" },
                 ],
+                header: "Test",
+                body: "Hello World!",
+                gamedrop: null,
+                instanceId: "",
+                style: 0,
+                subtitle: "",
                 images: [
                     {
                         id: "Primary",
                         isLoaded: true,
                         url: "/hbui/assets/welcome_graphic-edbb3.png",
+                        nonAnimatedUrl: "/hbui/assets/welcome_graphic-a7b874bb72ee6c080154.png",
+                        animatedUrl: "",
+                        imageSize: { width: 512, height: 256 },
                     },
                 ],
                 buttons: [
@@ -22,8 +34,16 @@ module.exports = () => ({
                         id: "Dismiss",
                         text: "",
                         link: "",
-                        action: "dismiss",
-                        reportClick: () => console.log("[EngineWrapper/PlayerMessagingServiceFacet] reportClick()"),
+                        description: "",
+                        action: /** @type {number} */ (/** @type {unknown} */ ("dismiss")),
+                        reportClick() {
+                            console.log("[EngineWrapper/PlayerMessagingServiceFacet] reportClick()");
+                            return null;
+                        },
+                        openExternalLink() {
+                            console.log("[EngineWrapper/PlayerMessagingServiceFacet] openExternalLink()");
+                            return null;
+                        },
                         additionalProperties: [],
                     },
                 ],
@@ -36,11 +56,20 @@ module.exports = () => ({
                     { key: "header", value: "Test" },
                     { key: "body", value: "Hello World!" },
                 ],
+                header: "Test",
+                body: "Hello World!",
+                gamedrop: null,
+                instanceId: "",
+                style: 0,
+                subtitle: "",
                 images: [
                     {
                         id: "Primary",
                         isLoaded: true,
                         url: "/hbui/assets/welcome_graphic-edbb3.png",
+                        nonAnimatedUrl: "/hbui/assets/welcome_graphic-a7b874bb72ee6c080154.png",
+                        animatedUrl: "",
+                        imageSize: { width: 512, height: 256 },
                     },
                 ],
                 buttons: [
@@ -48,16 +77,32 @@ module.exports = () => ({
                         id: "Dismiss",
                         text: "",
                         link: "",
-                        action: "dismiss",
-                        reportClick: () => console.log("[EngineWrapper/PlayerMessagingServiceFacet] reportClick()"),
+                        description: "",
+                        action: /** @type {number} */ (/** @type {unknown} */ ("dismiss")),
+                        reportClick() {
+                            console.log("[EngineWrapper/PlayerMessagingServiceFacet] reportClick()");
+                            return null;
+                        },
+                        openExternalLink() {
+                            console.log("[EngineWrapper/PlayerMessagingServiceFacet] openExternalLink()");
+                            return null;
+                        },
                         additionalProperties: [],
                     },
                     {
                         id: "CallToAction",
                         text: "",
                         link: "",
-                        action: "productId",
-                        reportClick: () => console.log("[EngineWrapper/PlayerMessagingServiceFacet] reportClick()"),
+                        description: "",
+                        action: /** @type {number} */ (/** @type {unknown} */ ("productId")),
+                        reportClick() {
+                            console.log("[EngineWrapper/PlayerMessagingServiceFacet] reportClick()");
+                            return null;
+                        },
+                        openExternalLink() {
+                            console.log("[EngineWrapper/PlayerMessagingServiceFacet] openExternalLink()");
+                            return null;
+                        },
                         additionalProperties: [],
                     },
                 ],
@@ -70,23 +115,45 @@ module.exports = () => ({
                     { key: "header", value: "Test" },
                     { key: "body", value: "Hello World!" },
                 ],
+                header: "Test",
+                body: "Hello World!",
+                gamedrop: null,
+                instanceId: "",
+                style: 0,
+                subtitle: "",
                 images: [
                     {
                         id: "Primary",
                         isLoaded: true,
                         url: "/hbui/assets/welcome_graphic-edbb3.png",
+                        nonAnimatedUrl: "/hbui/assets/welcome_graphic-a7b874bb72ee6c080154.png",
+                        animatedUrl: "",
+                        imageSize: { width: 512, height: 256 },
                     },
                     {
                         id: "Secondary",
                         isLoaded: true,
                         url: "/hbui/assets/welcome_graphic-edbb3.png",
+                        nonAnimatedUrl: "/hbui/assets/welcome_graphic-a7b874bb72ee6c080154.png",
+                        animatedUrl: "",
+                        imageSize: { width: 512, height: 256 },
                     },
                 ],
                 buttons: [
                     {
                         id: "CallToAction",
                         text: "",
-                        reportClick: () => console.log("[EngineWrapper/PlayerMessagingServiceFacet] reportClick()"),
+                        reportClick() {
+                            console.log("[EngineWrapper/PlayerMessagingServiceFacet] reportClick()");
+                            return null;
+                        },
+                        openExternalLink() {
+                            console.log("[EngineWrapper/PlayerMessagingServiceFacet] openExternalLink()");
+                            return null;
+                        },
+                        action: 0,
+                        description: "",
+                        link: "",
                     },
                 ],
             },
@@ -100,7 +167,10 @@ module.exports = () => ({
                         description: "",
                         text: "Available Now",
                         id: "CallToAction",
-                        openExternalLink: "function openExternalLink() { [native code] }",
+                        openExternalLink() {
+                            console.log("[EngineWrapper/PlayerMessagingServiceFacet] openExternalLink()");
+                            return null;
+                        },
                     },
                     {
                         action: 0,
@@ -108,7 +178,10 @@ module.exports = () => ({
                         description: "",
                         text: "Continue",
                         id: "Dismiss",
-                        openExternalLink: "function openExternalLink() { [native code] }",
+                        openExternalLink() {
+                            console.log("[EngineWrapper/PlayerMessagingServiceFacet] openExternalLink()");
+                            return null;
+                        },
                     },
                 ],
                 images: [
@@ -130,8 +203,7 @@ module.exports = () => ({
             },
         ],
     },
-    status: 2,
+    status: PlayerMessagingServiceFacetStatus.LOADED,
     reportClick: () => console.log("[EngineWrapper/PlayerMessagingServiceFacet] reportClick.bind()"),
     reportDismiss: () => console.log("[EngineWrapper/PlayerMessagingServiceFacet] reportDismiss.bind()"),
 });
-

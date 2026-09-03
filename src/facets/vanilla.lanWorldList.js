@@ -1,11 +1,14 @@
-module.exports = () => ({
+// @ts-check
+const { GameMode } = require("@ore-ui-types/enums");
+
+module.exports = /** @type {FacetTypeMap["vanilla.lanWorldList"]} */ () => ({
     lanWorlds: [
         {
             ping: "",
             capacity: 5,
             playerCount: 1,
             isHardcore: false,
-            gameMode: 1,
+            gameMode: GameMode.CREATIVE,
             port: 0,
             address: "UNASSIGNED_SYSTEM_ADDRESS",
             ownerName: "Andexter8",
@@ -14,4 +17,3 @@ module.exports = () => ({
         },
     ],
 });
-

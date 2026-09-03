@@ -1,21 +1,23 @@
 // @ts-check
-/** @type {{ [type in 0 | 1 | 2 | 3]: { [id: string]: FacetTypeMap["vanilla.networkWorldDetails"]["networkDetails"] } }} */
+const { WorldPingStatus, NetworkWorldType } = require("@ore-ui-types/enums");
+
+/** @type {{ [type in NetworkWorldType<"values">]: { [id: string]: FacetTypeMap["vanilla.networkWorldDetails"]["networkDetails"] } }} */
 const networkWorldDetailsDataMap = {
     // Featured Server
-    [0]: {
+    [NetworkWorldType.ThirdParty]: {
         "3b73ca98-1652-42b6-a89b-2a4ba52be7e3": {
             id: "3b73ca98-1652-42b6-a89b-2a4ba52be7e3",
             name: "Test Featured Server",
             ping: "12",
             capacity: 5000,
             playerCount: 1200,
-            pingStatus: 1,
+            pingStatus: WorldPingStatus.Low,
             imagePath: "/src/assets/mcpreview.png",
             description: "This is a test featured server, it has some random activities that will be happening along the day, we have events 24/7.",
             newsTitle: "Big news here!",
             newsDescription:
                 "We have some big news here, we will going under maintenance the 07/07 and the server will not be available that day. Everything done that day will be discarded",
-            type: 0,
+            type: NetworkWorldType.ThirdParty,
             activities: [
                 {
                     title: "Random activity!",
@@ -34,13 +36,13 @@ const networkWorldDetailsDataMap = {
             ping: "12",
             capacity: 5000,
             playerCount: 1200,
-            pingStatus: 1,
+            pingStatus: WorldPingStatus.Low,
             imagePath: "/src/assets/mcpreview.png",
             description: "This is a test creator experience server, it has some random activities that will be happening along the day, we have events 24/7.",
             newsTitle: "Big news here!",
             newsDescription:
                 "We have some big news here, we will going under maintenance the 07/07 and the server will not be available that day. Everything done that day will be discarded",
-            type: 0,
+            type: NetworkWorldType.ThirdParty,
             activities: [
                 {
                     title: "Random activity!",
@@ -59,13 +61,13 @@ const networkWorldDetailsDataMap = {
             ping: "12",
             capacity: 5000,
             playerCount: 1200,
-            pingStatus: 1,
+            pingStatus: WorldPingStatus.Low,
             imagePath: "/src/assets/mcpreview.png",
             description: "This is a test featured experience server, it has some random activities that will be happening along the day, we have events 24/7.",
             newsTitle: "Big news here!",
             newsDescription:
                 "We have some big news here, we will going under maintenance the 07/07 and the server will not be available that day. Everything done that day will be discarded",
-            type: 0,
+            type: NetworkWorldType.ThirdParty,
             activities: [
                 {
                     title: "Random activity!",
@@ -84,13 +86,13 @@ const networkWorldDetailsDataMap = {
             ping: "-1",
             capacity: 0,
             playerCount: 0,
-            pingStatus: 0,
+            pingStatus: WorldPingStatus.Unavailable,
             imagePath: "/src/assets/mcpreview.png",
             description: "This is a test gatherings server, it has some random activities that will be happening along the day, we have events 24/7.",
             newsTitle: "Big news here!",
             newsDescription:
                 "We have some big news here, we will going under maintenance the 07/07 and the server will not be available that day. Everything done that day will be discarded",
-            type: 0,
+            type: NetworkWorldType.ThirdParty,
             activities: [
                 {
                     title: "Random activity!",
@@ -105,7 +107,7 @@ const networkWorldDetailsDataMap = {
         },
     },
     // External Server
-    [1]: {
+    [NetworkWorldType.External]: {
         1: {
             id: "1",
             name: "Test External Server",
@@ -113,11 +115,11 @@ const networkWorldDetailsDataMap = {
             capacity: 5000,
             playerCount: 1,
             imagePath: "",
-            pingStatus: 3,
+            pingStatus: WorldPingStatus.High,
             description: "",
             newsTitle: "",
             newsDescription: "",
-            type: 1,
+            type: NetworkWorldType.External,
             activities: [],
             address: "www.8crafter.com",
             port: 19132,
@@ -125,9 +127,9 @@ const networkWorldDetailsDataMap = {
         },
     },
     // Realm
-    [2]: {},
+    [NetworkWorldType.Realm]: {},
     // LAN Server
-    [3]: {},
+    [NetworkWorldType.LAN]: {},
 };
 /** @type {FacetTypeMap["vanilla.networkWorldDetails"]["networkDetails"]} */
 const fallbackNetworkWorldDetails = {

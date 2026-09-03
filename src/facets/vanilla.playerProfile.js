@@ -1,5 +1,5 @@
 // @ts-check
-const { FavoriteStatusEnum, SocialPresence, PlayerRelation, PartyPresence } = require("@ore-ui-types/enums");
+const { FavoriteStatusEnum, SocialPresence, PlayerRelation, PartyPresence, ProfileImageState } = require("@ore-ui-types/enums");
 
 // TODO: Add 1.21.71 support for this.
 
@@ -23,7 +23,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 qrCode: "/hbui/assets/qr_placeholder-83885.png",
                 playingOnServerId: "12345",
                 url: "data:text/plain,Ah%2C%20another%20sentient%20test%2C%20eh%3F%20Come%20here%20and%20let%20me%20erase%20you!",
-                avatarState: 0,
+                avatarState: ProfileImageState.Undefined,
                 favoriteStatus: FavoriteStatusEnum.UNKNOWN,
                 isInSameGame: false,
                 offlineName: "testtesttesttest",
@@ -61,7 +61,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 presence: SocialPresence.Online,
                 platformId: "",
                 avatar: "",
-                avatarState: 0,
+                avatarState: ProfileImageState.Undefined,
                 isBlocked: false,
                 isMuted: false,
                 qrCode: "/hbui/assets/qr_placeholder-83885.png",
@@ -97,7 +97,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 presence: SocialPresence.Away,
                 platformId: "",
                 avatar: "",
-                avatarState: 0,
+                avatarState: ProfileImageState.Undefined,
                 isBlocked: false,
                 isMuted: false,
                 qrCode: "/hbui/assets/qr_placeholder-83885.png",
@@ -134,7 +134,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 presence: SocialPresence.Online,
                 platformId: "",
                 avatar: "",
-                avatarState: 0,
+                avatarState: ProfileImageState.Undefined,
                 isBlocked: false,
                 isMuted: false,
                 qrCode: "/hbui/assets/qr_placeholder-83885.png",
@@ -171,7 +171,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 presence: SocialPresence.Online,
                 platformId: "",
                 avatar: "",
-                avatarState: 0,
+                avatarState: ProfileImageState.Undefined,
                 isBlocked: false,
                 isMuted: false,
                 qrCode: "/hbui/assets/qr_placeholder-83885.png",
@@ -191,7 +191,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
             data: /**
              * @satisfies {ReturnType<FacetTypeMap["vanilla.playerProfile"]["playerProfiles"]["slice"]>[0]["data"] & Record<"gamerTag" | "gamerIcon" | "isOnline" | "isCurrentlyPlaying", string | boolean>}
              */ {
-                xuid: "2535447190358939" ,
+                xuid: "2535447190358939",
                 gamerTag: "xK1ngDark" /* "iiDarkGamerYT" */,
                 // @ts-ignore
                 playingOnServerId: undefined,
@@ -208,7 +208,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 presence: SocialPresence.Offline,
                 platformId: "",
                 avatar: "",
-                avatarState: 0,
+                avatarState: ProfileImageState.Undefined,
                 isBlocked: false,
                 isMuted: false,
                 qrCode: "/hbui/assets/qr_placeholder-83885.png",
@@ -245,7 +245,7 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
                 presence: SocialPresence.Online,
                 platformId: "",
                 avatar: "",
-                avatarState: 0,
+                avatarState: ProfileImageState.Undefined,
                 isBlocked: false,
                 isMuted: false,
                 qrCode: "/hbui/assets/qr_placeholder-83885.png",
@@ -307,4 +307,3 @@ module.exports = /** @type {() => FacetTypeMap["vanilla.playerProfile"]} */ () =
         error: 0,
     },*/
 });
-

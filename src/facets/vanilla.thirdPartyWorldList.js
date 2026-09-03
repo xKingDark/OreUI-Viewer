@@ -1,9 +1,9 @@
 // @ts-check
-const { FacetTaskState } = require("@ore-ui-types/enums");
+const { FacetTaskState, ThirdPartyServersStatus, WorldPingStatus } = require("@ore-ui-types/enums");
 
 module.exports = /** @type {() => UnionToIntersection<FacetTypeMap["vanilla.thirdPartyWorldList"]>} */ () => ({
     fetchThirdPartyWorldsTaskState: FacetTaskState.DONE,
-    thirdPartyServersStatus: 0 /* ThirdPartyServersStatus */ /* TODO: Switch this to the enum when the module update containing it is released. */,
+    thirdPartyServersStatus: ThirdPartyServersStatus.ServersSupported,
     thirdPartyWorlds: [
         {
             id: "3b73ca98-1652-42b6-a89b-2a4ba52be7e3",
@@ -12,7 +12,7 @@ module.exports = /** @type {() => UnionToIntersection<FacetTypeMap["vanilla.thir
             ping: 12,
             capacity: 5000,
             playerCount: 1200,
-            pingStatus: 1,
+            pingStatus: WorldPingStatus.Low,
             image: "/src/assets/mcpreview.png",
             msgOfTheDay: "Welcome to the best server ever!",
             description: "This is a test description for the featured server.",
@@ -25,7 +25,7 @@ module.exports = /** @type {() => UnionToIntersection<FacetTypeMap["vanilla.thir
             ping: "12",
             capacity: 5000,
             playerCount: 1200,
-            pingStatus: 1,
+            pingStatus: WorldPingStatus.Low,
             image: "/src/assets/mcpreview.png",
             msgOfTheDay: "Welcome to the best server ever!",
             description: "This is a test description for the creator experience server.",
@@ -38,7 +38,7 @@ module.exports = /** @type {() => UnionToIntersection<FacetTypeMap["vanilla.thir
             ping: "12",
             capacity: 5000,
             playerCount: 1200,
-            pingStatus: 1,
+            pingStatus: WorldPingStatus.Low,
             image: "/src/assets/mcpreview.png",
             msgOfTheDay: "Welcome to the best server ever!",
             description: "This is a test description for the featured experience server.",
@@ -49,7 +49,7 @@ module.exports = /** @type {() => UnionToIntersection<FacetTypeMap["vanilla.thir
             ping: "-1",
             capacity: 0,
             playerCount: 0,
-            pingStatus: 0,
+            pingStatus: WorldPingStatus.Unavailable,
             image: "/src/assets/mcpreview.png",
             msgOfTheDay: "",
             description: "This is a test description for the gatherings server.",

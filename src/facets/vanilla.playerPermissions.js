@@ -1,32 +1,47 @@
-const Permissions = {
-    Build: 0,
-    Mine: 1,
-    DoorsAndSwitches: 2,
-    OpenContainers: 3,
-    AttackPlayers: 4,
-    AttackMobs: 5,
-    OperatorCommands: 6,
-    Teleport: 7,
-};
+// @ts-check
+const { PlayerPermissionsAbility, PlayerPermissionsActionState, PlayerPermissionLevel } = require("@ore-ui-types/enums");
 
-module.exports = () => ({
-    playerPermissionLevel: 2,
+module.exports = /** @type {() => FacetTypeMap["vanilla.playerPermissions"]} */ () => ({
+    kickCommandState: PlayerPermissionsActionState.Success,
+    operatorCommandsRevokedFlag: false,
+    selectedPlayerPermissionsChangedFlag: false,
+    selectedPlayerLeftFlag: false,
+    playerPermissionsMissingFlag: false,
+    playerIdInvalidFlag: false,
+    playerPermissionLevel: PlayerPermissionLevel.Operator,
     canEditPermissions: true,
     canKickPlayer: true,
     isWorldTemplateOptionsLocked: false,
     areCheatsEnabled: true,
     playerPermissionList: [
-        { abilityIndex: Permissions.Build, isEnabled: true },
-        { abilityIndex: Permissions.Mine, isEnabled: true },
-        { abilityIndex: Permissions.DoorsAndSwitches, isEnabled: true },
-        { abilityIndex: Permissions.OpenContainers, isEnabled: true },
-        { abilityIndex: Permissions.AttackPlayers, isEnabled: true },
-        { abilityIndex: Permissions.AttackMobs, isEnabled: true },
-        { abilityIndex: Permissions.OperatorCommands, isEnabled: true },
-        { abilityIndex: Permissions.Teleport, isEnabled: true },
+        { abilityIndex: PlayerPermissionsAbility.Build, isEnabled: true },
+        { abilityIndex: PlayerPermissionsAbility.Mine, isEnabled: true },
+        { abilityIndex: PlayerPermissionsAbility.DoorsAndSwitches, isEnabled: true },
+        { abilityIndex: PlayerPermissionsAbility.OpenContainers, isEnabled: true },
+        { abilityIndex: PlayerPermissionsAbility.AttackPlayers, isEnabled: true },
+        { abilityIndex: PlayerPermissionsAbility.AttackMobs, isEnabled: true },
+        { abilityIndex: PlayerPermissionsAbility.OperatorCommands, isEnabled: true },
+        { abilityIndex: PlayerPermissionsAbility.Teleport, isEnabled: true },
     ],
-    setPlayerPermissionLevel: () => {},
-    kickPlayer: (player) => {},
-    loadPlayerPermissions: () => {},
-    enableCheats: () => {},
+    loadPlayerPermissions() {
+        return null;
+    },
+    requestSavePermissions() {
+        return null;
+    },
+    setPlayerPermissionLevel() {
+        return null;
+    },
+    setPlayerPermission() {
+        return null;
+    },
+    kickPlayer(_player) {
+        return null;
+    },
+    enableCheats() {
+        return null;
+    },
+    clearErrorFlag(errorFlag) {
+        return null;
+    },
 });
